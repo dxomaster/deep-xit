@@ -7,7 +7,7 @@ import { applyRateLimit } from '@/lib/api-guard'
 export const runtime = 'nodejs'
 
 const requestSchema = z.object({
-  roomId: z.string().uuid(),
+  roomId: z.string().min(1),
   displayName: z.string().min(1).max(30),
   sessionId: z.string().min(1),
 })
@@ -19,6 +19,7 @@ export async function POST(request: Request) {
   const parsed = requestSchema.safeParse(await request.json())
 
   if (!parsed.success) {
+    console.error('Join request validation failed:', parsed.error)
     return NextResponse.json({ error: 'Invalid join request' }, { status: 400 })
   }
 

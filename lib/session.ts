@@ -2,7 +2,7 @@ const SESSION_KEY = 'deep-xit-session-id'
 
 export function getSessionId(): string {
   if (typeof window === 'undefined') {
-    return ''
+    return crypto.randomUUID()
   }
 
   let sessionId = localStorage.getItem(SESSION_KEY)

@@ -12,6 +12,8 @@ export default function RoomPage() {
   const router = useRouter()
   const roomId = params.roomId
 
+  console.log('RoomPage loaded with roomId:', roomId)
+
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [displayName, setDisplayName] = useState('')
   const [isJoining, setIsJoining] = useState(false)
@@ -650,6 +652,7 @@ export default function RoomPage() {
     const name = displayName.trim()
     if (!name) return
 
+    console.log('Joining room with roomId:', roomId)
     setIsJoining(true)
     setSubmitError(null)
 
@@ -667,6 +670,7 @@ export default function RoomPage() {
     }
 
     const { player } = (await response.json()) as { player: { id: string } }
+    console.log('Joined successfully, player ID:', player.id)
     setPlayerIdForRoom(roomId, player.id)
     setPlayerId(player.id)
     setIsJoining(false)

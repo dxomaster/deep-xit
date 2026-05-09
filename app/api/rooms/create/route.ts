@@ -27,10 +27,12 @@ export async function POST(request: Request) {
     const roomService = new RoomService(supabase)
     const room = await roomService.createRoom(parsed.data.theme, parsed.data.useAI ?? true, parsed.data.maxRounds ?? 10)
 
+    console.log('Room created:', room)
     return NextResponse.json({ room }, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create room'
 
+    console.error('Room creation error:', error)
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

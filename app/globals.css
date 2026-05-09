@@ -1,0 +1,663 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Celestial Gothic palette */
+  --background: #0a0612;
+  --foreground: #e8e0f0;
+  --card: #0e0818;
+  --card-foreground: #e8e0f0;
+  --popover: #0a0612;
+  --popover-foreground: #e8e0f0;
+  --primary: #d4af5a;
+  --primary-foreground: #0a0612;
+  --secondary: #160c28;
+  --secondary-foreground: #d4c8e8;
+  --muted: #120820;
+  --muted-foreground: #8a78a8;
+  --accent: #221540;
+  --accent-foreground: #e8e0f0;
+  --destructive: #e74c5e;
+  --destructive-foreground: #ffdddd;
+  --border: rgba(197, 160, 89, 0.35);
+  --input: #160c28;
+  --ring: #d4af5a;
+  --chart-1: #d4af5a;
+  --chart-2: #581c87;
+  --chart-3: #4a90d9;
+  --chart-4: #e07850;
+  --chart-5: #50c878;
+  --radius: 0.75rem;
+  --sidebar: #050505;
+  --sidebar-foreground: #e8e0f0;
+  --sidebar-primary: #d4af5a;
+  --sidebar-primary-foreground: #0a0612;
+  --sidebar-accent: #221540;
+  --sidebar-accent-foreground: #e8e0f0;
+  --sidebar-border: rgba(197, 160, 89, 0.35);
+  --sidebar-ring: #d4af5a;
+}
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback';
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-serif: 'Cinzel', 'Playfair Display', serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-gold: #d4af5a;
+  --color-purple-deep: #160c28;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background: 
+      radial-gradient(ellipse at 20% 0%, rgba(88, 28, 135, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(88, 28, 135, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(30, 15, 60, 0.4) 0%, transparent 70%),
+      linear-gradient(180deg, #0a0612 0%, #0e0818 40%, #0a0612 100%);
+    min-height: 100vh;
+  }
+
+  /* Custom scrollbar for the whole app */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(197, 160, 89, 0.25);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(197, 160, 89, 0.4);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   Starfield & Atmospheric Background
+   ══════════════════════════════════════════════ */
+
+.game-bg {
+  position: relative;
+  background: 
+    radial-gradient(ellipse at 20% 0%, rgba(88, 28, 135, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(88, 28, 135, 0.1) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0612 0%, #0e0818 40%, #0a0612 100%);
+  min-height: 100vh;
+}
+
+.game-bg::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    /* Bright stars */
+    radial-gradient(1.5px 1.5px at 10% 15%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 20% 35%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 30% 65%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 10%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 55% 85%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 40%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 75% 70%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 92% 55%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+    /* Gold stars */
+    radial-gradient(2px 2px at 8% 50%, rgba(212, 175, 90, 0.6) 0%, transparent 100%),
+    radial-gradient(2px 2px at 38% 25%, rgba(212, 175, 90, 0.5) 0%, transparent 100%),
+    radial-gradient(2px 2px at 68% 80%, rgba(212, 175, 90, 0.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 88% 45%, rgba(212, 175, 90, 0.5) 0%, transparent 100%),
+    /* Dim distant stars */
+    radial-gradient(0.5px 0.5px at 5% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 15% 55%, rgba(255, 255, 255, 0.25) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 25% 90%, rgba(255, 255, 255, 0.3) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 50% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 60% 60%, rgba(255, 255, 255, 0.25) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 78% 15%, rgba(255, 255, 255, 0.3) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 95% 75%, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+  animation: twinkle 8s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.85; }
+}
+
+.game-bg::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at 15% 15%, rgba(120, 60, 180, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 85%, rgba(100, 50, 160, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 90, 0.03) 0%, transparent 30%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.game-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ══════════════════════════════════════════════
+   Sticky Header
+   ══════════════════════════════════════════════ */
+
+.game-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(10, 6, 18, 0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(197, 160, 89, 0.25);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(197, 160, 89, 0.1);
+}
+
+.header-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  color: #d4af5a;
+  text-shadow: 
+    0 0 20px rgba(212, 175, 90, 0.4),
+    0 0 40px rgba(212, 175, 90, 0.2);
+  letter-spacing: 0.12em;
+}
+
+/* ══════════════════════════════════════════════
+   Glass Panels
+   ══════════════════════════════════════════════ */
+
+.frosted-glass {
+  background: linear-gradient(135deg, rgba(14, 8, 24, 0.85) 0%, rgba(10, 6, 18, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 1rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 1px rgba(197, 160, 89, 0.3),
+    inset 0 1px 0 rgba(197, 160, 89, 0.05);
+}
+
+.glass-panel {
+  background: linear-gradient(135deg, rgba(14, 8, 24, 0.85) 0%, rgba(10, 6, 18, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 1rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 1px rgba(197, 160, 89, 0.3),
+    inset 0 1px 0 rgba(197, 160, 89, 0.05);
+}
+
+/* ══════════════════════════════════════════════
+   Central Game Table
+   ══════════════════════════════════════════════ */
+
+.game-table {
+  position: relative;
+  background: 
+    radial-gradient(ellipse at center, rgba(22, 12, 40, 0.9) 0%, rgba(10, 6, 18, 0.98) 100%);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  border-radius: 50%;
+  box-shadow: 
+    inset 0 0 120px rgba(88, 28, 135, 0.12),
+    inset 0 0 60px rgba(197, 160, 89, 0.06),
+    0 0 60px rgba(88, 28, 135, 0.2),
+    0 0 120px rgba(10, 6, 18, 0.8);
+  max-width: 75vh;
+  max-height: 75vh;
+  overflow: visible;
+  clip-path: none;
+}
+
+/* Subtle ornate inner ring */
+.game-table::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(197, 160, 89, 0.08);
+  pointer-events: none;
+}
+
+.circle-cards {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.circle-card {
+  position: absolute;
+  transform-origin: center center;
+  z-index: 1;
+}
+
+.circle-card.selected {
+  z-index: 10;
+}
+
+/* ══════════════════════════════════════════════
+   Hand Trays
+   ══════════════════════════════════════════════ */
+
+.hand-tray-horizontal {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(180deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(197, 160, 89, 0.25);
+  border-radius: 1.5rem 1.5rem 0 0;
+  box-shadow: 
+    0 -8px 40px rgba(0, 0, 0, 0.6),
+    0 -1px 0 rgba(197, 160, 89, 0.1);
+}
+
+.hand-card-vertical {
+  width: 5.5rem;
+  height: 7rem;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 10px rgba(197, 160, 89, 0.15);
+}
+
+.hand-tray {
+  background: linear-gradient(180deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 1.25rem 1.25rem 0 0;
+  box-shadow: 
+    0 -4px 30px rgba(0, 0, 0, 0.6),
+    0 -1px 0 rgba(197, 160, 89, 0.1);
+}
+
+/* ══════════════════════════════════════════════
+   Card Backs
+   ══════════════════════════════════════════════ */
+
+.card-back-moon {
+  background: linear-gradient(135deg, #16103a 0%, #0a0620 100%);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3/4;
+}
+
+.card-back-moon::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(197, 160, 89, 0.1);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.card-back-moon::after {
+  content: '☾';
+  font-size: 2rem;
+  color: rgba(212, 175, 90, 0.5);
+  text-shadow: 0 0 20px rgba(212, 175, 90, 0.3);
+}
+
+.card-back {
+  aspect-ratio: 3/4;
+  width: 100%;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(88, 28, 135, 0.2) 0%, transparent 70%),
+    repeating-conic-gradient(from 0deg at 50% 50%, #14103a 0deg 30deg, #100c2e 30deg 60deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-back::after {
+  content: '';
+  width: 40%;
+  height: 40%;
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(197, 160, 89, 0.1) 0%, transparent 70%);
+}
+
+/* ══════════════════════════════════════════════
+   Floating Panels
+   ══════════════════════════════════════════════ */
+
+.float-panel {
+  position: fixed;
+  z-index: 40;
+}
+
+.float-panel-left {
+  bottom: 8rem;
+  left: 1.5rem;
+  width: 20rem;
+  max-height: 25rem;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 1rem;
+}
+
+.float-panel-left::-webkit-scrollbar { width: 4px; }
+.float-panel-left::-webkit-scrollbar-track { background: transparent; }
+.float-panel-left::-webkit-scrollbar-thumb { background: rgba(197, 160, 89, 0.2); border-radius: 2px; }
+.float-panel-left::-webkit-scrollbar-thumb:hover { background: rgba(197, 160, 89, 0.4); }
+
+.float-panel-right {
+  top: 5rem;
+  right: 1.5rem;
+  width: 16rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 1rem;
+}
+
+.float-panel-right::-webkit-scrollbar { width: 4px; }
+.float-panel-right::-webkit-scrollbar-track { background: transparent; }
+.float-panel-right::-webkit-scrollbar-thumb { background: rgba(197, 160, 89, 0.2); border-radius: 2px; }
+.float-panel-right::-webkit-scrollbar-thumb:hover { background: rgba(197, 160, 89, 0.4); }
+
+/* ══════════════════════════════════════════════
+   Environmental / Atmospheric Elements
+   ══════════════════════════════════════════════ */
+
+.environment-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Soft nebula glow bottom-left */
+.clockwork-tree {
+  position: absolute;
+  bottom: -5%;
+  left: -5%;
+  width: 400px;
+  height: 400px;
+  opacity: 1;
+  background: radial-gradient(ellipse at center, rgba(120, 60, 180, 0.08) 0%, transparent 60%);
+  filter: blur(40px);
+}
+
+/* Soft nebula glow top-right */
+.floating-castle {
+  position: absolute;
+  top: -5%;
+  right: -5%;
+  width: 350px;
+  height: 350px;
+  opacity: 1;
+  background: radial-gradient(ellipse at center, rgba(212, 175, 90, 0.04) 0%, transparent 60%);
+  filter: blur(40px);
+}
+
+/* ══════════════════════════════════════════════
+   Game Cards
+   ══════════════════════════════════════════════ */
+
+.game-card {
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  background: #120a22;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    0 0 8px rgba(88, 28, 135, 0.2);
+  position: relative;
+}
+
+.game-card img {
+  display: block;
+}
+
+.game-card:hover:not(:disabled) {
+  border-color: rgba(212, 175, 90, 0.6);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(212, 175, 90, 0.15),
+    0 0 8px rgba(88, 28, 135, 0.3);
+  transform: translateY(-2px);
+}
+
+.game-card.selected {
+  border-color: #d4af5a;
+  border-width: 2px;
+  box-shadow: 
+    0 0 25px rgba(212, 175, 90, 0.4),
+    0 0 50px rgba(212, 175, 90, 0.15),
+    inset 0 0 15px rgba(212, 175, 90, 0.05);
+}
+.game-card.selected::after {
+  content: '✓';
+  position: absolute;
+  inset: auto;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4af5a, #c5a059);
+  color: #0a0612;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  pointer-events: none;
+}
+.game-card:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ══════════════════════════════════════════════
+   Board Area
+   ══════════════════════════════════════════════ */
+
+.board-area {
+  background: radial-gradient(ellipse at center, rgba(22, 12, 40, 0.95) 0%, rgba(10, 6, 18, 0.98) 100%);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 1.5rem;
+  box-shadow: 
+    inset 0 0 60px rgba(88, 28, 135, 0.15),
+    0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* ══════════════════════════════════════════════
+   Clue Banner
+   ══════════════════════════════════════════════ */
+
+.clue-banner {
+  background: linear-gradient(135deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  border-radius: 1rem;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    0 0 1px rgba(197, 160, 89, 0.4),
+    inset 0 1px 0 rgba(197, 160, 89, 0.06);
+  position: relative;
+}
+
+/* Ornamental corner accents on clue banner */
+.clue-banner::before {
+  content: '✦';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(212, 175, 90, 0.3);
+  font-size: 10px;
+}
+.clue-banner::after {
+  content: '✦';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(212, 175, 90, 0.3);
+  font-size: 10px;
+}
+
+/* ══════════════════════════════════════════════
+   Gold Button
+   ══════════════════════════════════════════════ */
+
+.btn-gold {
+  background: linear-gradient(135deg, #2a1c42 0%, #1e1435 100%);
+  color: #d4af5a;
+  font-weight: 700;
+  font-family: 'Cinzel', serif;
+  border: 1px solid rgba(212, 175, 90, 0.5);
+  border-radius: 0.75rem;
+  padding: 0.75rem 2rem;
+  transition: all 0.25s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 10px rgba(212, 175, 90, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-gold::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(212, 175, 90, 0.05) 0%, transparent 50%, rgba(212, 175, 90, 0.05) 100%);
+  pointer-events: none;
+}
+
+.btn-gold:hover:not(:disabled) {
+  border-color: rgba(212, 175, 90, 0.8);
+  box-shadow: 
+    0 4px 20px rgba(212, 175, 90, 0.25),
+    0 0 40px rgba(212, 175, 90, 0.1);
+  text-shadow: 0 0 15px rgba(212, 175, 90, 0.5);
+  transform: translateY(-1px);
+}
+.btn-gold:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-shadow: none;
+}
+
+/* ══════════════════════════════════════════════
+   Player Entries & Avatars
+   ══════════════════════════════════════════════ */
+
+.player-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.player-entry:hover {
+  background: rgba(197, 160, 89, 0.04);
+}
+.player-entry.storyteller {
+  background: rgba(197, 160, 89, 0.08);
+  border-color: rgba(197, 160, 89, 0.15);
+}
+
+.player-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a1850 0%, #3c285a 50%, #4a3068 100%);
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #e8e0f0;
+  flex-shrink: 0;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ══════════════════════════════════════════════
+   Feed Panel
+   ══════════════════════════════════════════════ */
+
+.feed-panel {
+  background: linear-gradient(135deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 1rem;
+}

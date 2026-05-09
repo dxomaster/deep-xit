@@ -1,0 +1,36 @@
+import { NextResponse } from 'next/server'
+import { z } from 'zod'
+import { RoomService } from '@/lib/game/room-service'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { applyRateLimit } from '@/lib/api-guard'
+
+export const runtime = 'nodejs'
+
+const requestSchema = z.object({
+  roomId: z.string().uuid(),
+  displayName: z.string().min(1).max(30),
+  sessionId: z.string().min(1),
+})
+
+export async function POST(request: Request) {
+  const rateLimited = applyRateLimit(request, 'rooms-join', 10, 60000)
+  if (rateLimited) return rateLimited
+
+  const parsed = requestSchema.safeParse(await request.json())
+
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid join request' }, { status: 400 })
+  }
+
+  try {
+    const supabase = createServerSupabaseClient()
+    const roomService = new RoomService(supabase)
+    const player = await roomService.joinRoom(parsed.data.roomId, parsed.data.displayName, parsed.data.sessionId)
+
+    return NextResponse.json({ player }, { status: 201 })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to join room'
+
+    return NextResponse.json({ error: message }, { status: 409 })
+  }
+}

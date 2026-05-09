@@ -74,6 +74,7 @@ export class RoomService {
       .single()
 
     if (roomError || !room) {
+      console.error('Room lookup failed:', { roomId, roomError, room })
       throw new Error('Room not found')
     }
 

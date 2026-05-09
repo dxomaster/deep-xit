@@ -12,6 +12,7 @@ export interface Room {
   theme: string | null
   maxRounds: number
   currentRound: number
+  isGeneratingImages: boolean
   createdAt: string
   updatedAt: string
 }

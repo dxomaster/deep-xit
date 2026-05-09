@@ -160,6 +160,9 @@ export class RoomService {
     console.log('Generating cards:', { totalCards, theme, useAI, playersCount: players.length })
     let images: { url: string }[] = []
 
+    // Set is_generating_images to true when starting generation
+    await this.supabase.from('rooms').update({ is_generating_images: true }).eq('id', roomId)
+
     if (useAI) {
       try {
         // Batch image generation in chunks of 4 to respect rate limit (4 QPS)
@@ -180,6 +183,8 @@ export class RoomService {
         console.log('Sample image URL:', images[0]?.url)
       } catch (error) {
         console.error('AI image generation failed:', error)
+        // Set is_generating_images to false on error
+        await this.supabase.from('rooms').update({ is_generating_images: false }).eq('id', roomId)
         throw new Error(`Failed to generate AI images: ${error instanceof Error ? error.message : String(error)}`)
       }
     } else {
@@ -220,7 +225,7 @@ export class RoomService {
 
     const { error: updateError } = await this.supabase
       .from('rooms')
-      .update({ storyteller_id: storyteller.id, status: 'STORYTELLING' })
+      .update({ storyteller_id: storyteller.id, status: 'STORYTELLING', is_generating_images: false })
       .eq('id', roomId)
 
     if (updateError) {
@@ -348,6 +353,11 @@ export class RoomService {
     console.log('Generating cards for next round:', { totalCardsToGenerate, theme, useAI, playersCount: players.length })
     let images: { url: string }[] = []
 
+    // Set is_generating_images to true when starting generation
+    if (totalCardsToGenerate > 0) {
+      await this.supabase.from('rooms').update({ is_generating_images: true }).eq('id', roomId)
+    }
+
     if (totalCardsToGenerate > 0 && useAI) {
       try {
         // Batch image generation in chunks of 4 to respect rate limit (4 QPS)
@@ -368,6 +378,8 @@ export class RoomService {
         console.log('Sample image URL:', images[0]?.url)
       } catch (error) {
         console.error('AI image generation failed:', error)
+        // Set is_generating_images to false on error
+        await this.supabase.from('rooms').update({ is_generating_images: false }).eq('id', roomId)
         throw new Error(`Failed to generate AI images: ${error instanceof Error ? error.message : String(error)}`)
       }
     }
@@ -400,6 +412,7 @@ export class RoomService {
         status: 'STORYTELLING',
         clue: null,
         current_round: nextRoundNumber,
+        is_generating_images: false,
       })
       .eq('id', roomId)
 

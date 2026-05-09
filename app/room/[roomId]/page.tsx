@@ -61,6 +61,7 @@ export default function RoomPage() {
       if (gameState.status !== 'SCORING') {
         setScoreDeltas([])
         setHasGeneratedSarcasticMessage(false)
+        setLastSarcasticMessage('')
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -452,11 +453,6 @@ export default function RoomPage() {
           {gameState.status && gameState.status !== 'FINISHED' && (
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-[#c5a059] font-serif">Round {gameState.currentRound} / {gameState.maxRounds}</span>
-            </div>
-          )}
-          {lastSarcasticMessage && (
-            <div className="hidden sm:block max-w-xs text-xs text-muted-foreground italic">
-              {lastSarcasticMessage}
             </div>
           )}
           <div className="flex items-center gap-2">

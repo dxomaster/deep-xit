@@ -56,13 +56,14 @@ export class RoomService {
     const { data, error } = await this.supabase
       .from('rooms')
       .insert(insertData)
-      .select()
+      .select('id, status, storyteller_id, clue, theme, max_rounds, current_round, is_generating_images, created_at, updated_at')
       .single()
 
     if (error) {
       throw new Error(`Failed to create room: ${error.message}`)
     }
 
+    console.log('Room data from database:', data)
     return mapRoom(data)
   }
 

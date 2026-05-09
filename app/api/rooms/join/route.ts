@@ -7,7 +7,7 @@ import { applyRateLimit } from '@/lib/api-guard'
 export const runtime = 'nodejs'
 
 const requestSchema = z.object({
-  roomId: z.string().uuid(),
+  roomId: z.string().min(1),
   displayName: z.string().min(1).max(30),
   sessionId: z.string().min(1),
 })

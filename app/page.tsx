@@ -22,21 +22,26 @@ export default function HomePage() {
     setIsCreating(true)
     setError(null)
 
-    const response = await fetch('/api/rooms/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ theme: themeValue, useAI, maxRounds }),
-    })
+    try {
+      const response = await fetch('/api/rooms/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme: themeValue, useAI: true }),
+      })
 
-    if (!response.ok) {
-      const body = (await response.json()) as { error?: string }
-      setError(body.error ?? 'Failed to create room')
+      if (!response.ok) {
+        const body = (await response.json()) as { error?: string }
+        setError(body.error ?? 'Failed to create room')
+        setIsCreating(false)
+        return
+      }
+
+      const data = (await response.json()) as { roomId: string }
+      router.push(`/room/${data.roomId}`)
+    } catch (err) {
+      setError('Failed to create room. Please try again.')
       setIsCreating(false)
-      return
     }
-
-    const { room } = (await response.json()) as { room: { id: string } }
-    router.push(`/room/${room.id}`)
   }
 
   function joinRoom() {

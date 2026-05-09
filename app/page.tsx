@@ -35,7 +35,15 @@ export default function HomePage() {
       return
     }
 
-    const { room } = (await response.json()) as { room: { id: string } }
+    const data = await response.json()
+    console.log('Create room response:', data)
+    const { room } = data as { room: { id: string } }
+    console.log('Room ID:', room?.id)
+    if (!room?.id) {
+      setError('Failed to get room ID')
+      setIsCreating(false)
+      return
+    }
     router.push(`/room/${room.id}`)
   }
 

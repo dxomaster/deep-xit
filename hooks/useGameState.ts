@@ -21,6 +21,7 @@ export interface GameState {
   votes: Vote[]
   currentRound: number
   maxRounds: number
+  isGeneratingImages: boolean
 }
 
 export interface UseGameStateResult {
@@ -39,6 +40,7 @@ const emptyGameState: GameState = {
   votes: [],
   currentRound: 1,
   maxRounds: 10,
+  isGeneratingImages: false,
 }
 
 export function useGameState(roomId: UUID | null | undefined, currentPlayerId?: string | null): UseGameStateResult {
@@ -87,6 +89,7 @@ export function useGameState(roomId: UUID | null | undefined, currentPlayerId?: 
               status: room.status,
               storytellerId: room.storytellerId,
               currentClue: room.clue,
+              isGeneratingImages: room.isGeneratingImages,
             }
           })
         },
@@ -275,6 +278,7 @@ function createRefreshGameState(
       votes: filteredVotes,
       currentRound: mappedRoom.currentRound,
       maxRounds: mappedRoom.maxRounds,
+      isGeneratingImages: mappedRoom.isGeneratingImages,
     })
     setIsLoading(false)
   }

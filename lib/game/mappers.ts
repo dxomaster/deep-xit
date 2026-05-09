@@ -9,6 +9,7 @@ export function mapRoom(row: any): Room {
     theme: row.theme ?? null,
     maxRounds: row.max_rounds ?? 10,
     currentRound: row.current_round ?? 1,
+    isGeneratingImages: row.is_generating_images ?? false,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }

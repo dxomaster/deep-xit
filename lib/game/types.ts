@@ -73,5 +73,4 @@ export interface GenerateImagesCommand {
 export interface GeneratedImage {
   url: string
   prompt: string
-  error?: string // Optional error field for failed generations
 }

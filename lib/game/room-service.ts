@@ -196,29 +196,22 @@ export class RoomService {
       console.log('Using placeholder images (user choice)')
     }
 
-    // Ensure we have exactly totalCards images by filling missing ones with placeholders
-    const validatedImages = [...images]
-    while (validatedImages.length < totalCards) {
-      const placeholderIndex = validatedImages.length % PLACEHOLDER_IMAGES.length
-      validatedImages.push({ url: PLACEHOLDER_IMAGES[placeholderIndex] })
-      console.warn(`Using placeholder image ${placeholderIndex + 1} for missing AI generation`)
-    }
-
     const cardInserts = []
     let imageIdx = 0
 
     for (const player of players) {
       for (let c = 0; c < CARDS_PER_HAND; c++) {
+        if (imageIdx >= images.length) break
         cardInserts.push({
           room_id: roomId,
           player_id: player.id,
-          image_url: validatedImages[imageIdx].url,
+          image_url: images[imageIdx].url,
         })
         imageIdx++
       }
     }
 
-    console.log('Card inserts:', cardInserts.length, '(Expected:', totalCards, ')')
+    console.log('Card inserts:', cardInserts.length)
 
     const { data: cards, error: cardsError } = await this.supabase
       .from('cards')
@@ -392,14 +385,6 @@ export class RoomService {
       }
     }
 
-    // Ensure we have exactly totalCardsToGenerate images by filling missing ones with placeholders
-    const validatedImages = [...images]
-    while (validatedImages.length < totalCardsToGenerate) {
-      const placeholderIndex = validatedImages.length % PLACEHOLDER_IMAGES.length
-      validatedImages.push({ url: PLACEHOLDER_IMAGES[placeholderIndex] })
-      console.warn(`Using placeholder image ${placeholderIndex + 1} for missing AI generation`)
-    }
-
     // Insert new cards for players who need them
     let imageIdx = 0
     const cardInserts = []
@@ -407,10 +392,11 @@ export class RoomService {
     for (const player of players) {
       const cardsNeeded = cardsNeededByPlayer.get(player.id) || 0
       for (let c = 0; c < cardsNeeded; c++) {
+        if (imageIdx >= images.length) break
         cardInserts.push({
           room_id: roomId,
           player_id: player.id,
-          image_url: validatedImages[imageIdx].url,
+          image_url: images[imageIdx].url,
         })
         imageIdx++
       }

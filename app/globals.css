@@ -259,6 +259,8 @@
   content: '';
   position: fixed;
   inset: 0;
+  will-change: opacity;
+  transform: translateZ(0);
   background-image:
     /* Cool blue-white distant stars */
     radial-gradient(0.6px 0.6px at 3%  8%,  rgba(200,220,255,0.4)  0%, transparent 100%),
@@ -288,6 +290,7 @@
   pointer-events: none;
   z-index: 0;
   animation: twinkle-slow 22s ease-in-out infinite alternate;
+  backface-visibility: hidden;
 }
 
 /* Layer 2 — mid stars, gold & blue flecks, 14s blink */
@@ -295,6 +298,8 @@
   content: '';
   position: fixed;
   inset: 0;
+  will-change: opacity;
+  transform: translateZ(0);
   background-image:
     /* White mid stars */
     radial-gradient(1px 1px   at 4%  25%,  rgba(255,255,255,0.65) 0%, transparent 100%),
@@ -332,6 +337,7 @@
   z-index: 0;
   animation: twinkle-mid 14s ease-in-out infinite alternate;
   animation-delay: -5s;
+  backface-visibility: hidden;
 }
 
 /* Layer 3 — bright hero stars + Milky Way band + shooting star */
@@ -340,6 +346,9 @@
   inset: 0;
   pointer-events: none;
   z-index: 0;
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
   background-image:
     /* Bright hero stars — varied sizes */
     radial-gradient(2.5px 2.5px at 7%  18%, rgba(255,255,255,0.95) 0%, transparent 100%),
@@ -406,6 +415,8 @@
   left: -8%;
   width: 700px;
   height: 700px;
+  will-change: transform;
+  backface-visibility: hidden;
   background: radial-gradient(ellipse at 40% 60%,
     rgba(100, 40, 200, 0.22) 0%,
     rgba(80, 20, 160, 0.14) 35%,
@@ -422,6 +433,8 @@
   right: -8%;
   width: 650px;
   height: 650px;
+  will-change: transform;
+  backface-visibility: hidden;
   background: radial-gradient(ellipse at 60% 40%,
     rgba(40, 20, 140, 0.2) 0%,
     rgba(60, 30, 160, 0.12) 30%,
@@ -440,6 +453,8 @@
   left: 30%;
   width: 500px;
   height: 400px;
+  will-change: transform;
+  backface-visibility: hidden;
   background: radial-gradient(ellipse at center,
     rgba(20, 80, 140, 0.1) 0%,
     rgba(10, 60, 120, 0.06) 50%,
@@ -449,6 +464,31 @@
   z-index: 0;
   animation: nebula-drift 42s ease-in-out infinite;
   animation-delay: -15s;
+}
+
+@media (max-width: 1024px) {
+  .game-bg::before,
+  .game-bg::after,
+  .stars-layer {
+    animation: none;
+  }
+  .nebula-left,
+  .nebula-right,
+  .nebula-mid {
+    animation: none;
+    filter: blur(80px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-bg::before,
+  .game-bg::after,
+  .stars-layer,
+  .nebula-left,
+  .nebula-right,
+  .nebula-mid {
+    animation: none;
+  }
 }
 
 .game-bg > * {

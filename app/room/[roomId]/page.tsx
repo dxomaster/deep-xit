@@ -1338,42 +1338,28 @@ export default function RoomPage() {
         {/* Player Hand — fanned deal animation */}
         {(gameState.status === 'STORYTELLING' ||
           (gameState.status === 'BLUFFING' && !isStoryteller && !hasSubmittedBluff)) && (
-          <motion.div
-            className="flex flex-row justify-center items-end overflow-visible gap-2 px-4 pt-3 pb-1"
-            initial="hidden"
-            animate="show"
-            variants={{ show: { transition: { staggerChildren: 0.07 } } }}
-          >
-            {handCards.map((card, idx) => {
+          <div className="flex flex-row justify-center items-end overflow-visible gap-2 px-4 pt-3 pb-1">
+            {handCards.map((card) => {
               const isDisabled =
                 (gameState.status === 'BLUFFING' && (isStoryteller || card.isSubmittedForRound || hasSubmittedBluff)) ||
                 (gameState.status === 'VOTING')
               const isSelected = selectedCardId === card.id
-              const count = handCards.length
-              const fanAngle = count > 1 ? (idx - (count - 1) / 2) * 2 : 0
 
               return (
-                <motion.button
+                <button
                   key={card.id}
                   type="button"
                   disabled={isDisabled}
                   onClick={() => setSelectedCardId(isSelected ? null : card.id)}
                   className={`game-card flex-shrink-0 min-w-[56px] w-14 h-20 sm:w-16 sm:h-24 ${isSelected ? 'selected' : ''}`}
-                  style={{ originX: '50%', originY: '110%', zIndex: isSelected ? 20 : undefined }}
-                  variants={{
-                    hidden: { opacity: 0, y: 40, rotate: 0, scale: 0.85 },
-                    show:   { opacity: 1, y: 0,  rotate: fanAngle, scale: 1 },
-                  }}
-                  transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-                  whileHover={!isDisabled ? { y: -12, rotate: 0, scale: 1.08, filter: 'drop-shadow(0 0 10px rgba(197,160,89,0.45))' } : {}}
-                  whileTap={!isDisabled ? { scale: 0.95 } : {}}
+                  style={{ zIndex: isSelected ? 20 : undefined }}
                 >
                   <img src={card.imageUrl} alt="Hand card" className="aspect-[3/4] w-full h-full object-cover rounded-[0.65rem]" />
-                </motion.button>
+                </button>
               )
             })}
             {handCards.length === 0 && <p className="py-2 text-xs italic text-muted-foreground">No cards in hand</p>}
-          </motion.div>
+          </div>
         )}
 
         {/* Submit Button */}
@@ -1412,42 +1398,28 @@ export default function RoomPage() {
         (gameState.status === 'BLUFFING' && !isStoryteller && !hasSubmittedBluff)) && (
         <div className="hidden lg:flex fixed bottom-0 left-0 right-0 z-50 flex-col items-center gap-3 p-4 hand-tray-horizontal safe-bottom">
           {/* Cards row with fan deal */}
-          <motion.div
-            className="flex w-full flex-row justify-center items-end overflow-visible gap-2 px-2 h-36"
-            initial="hidden"
-            animate="show"
-            variants={{ show: { transition: { staggerChildren: 0.08 } } }}
-          >
-            {handCards.map((card, idx) => {
+          <div className="flex w-full flex-row justify-center items-end overflow-visible gap-2 px-2 h-36">
+            {handCards.map((card) => {
               const isDisabled =
                 (gameState.status === 'BLUFFING' && (isStoryteller || card.isSubmittedForRound || hasSubmittedBluff)) ||
                 (gameState.status === 'VOTING')
               const isSelected = selectedCardId === card.id
-              const count = handCards.length
-              const fanAngle = count > 1 ? (idx - (count - 1) / 2) * 2 : 0
 
               return (
-                <motion.button
+                <button
                   key={card.id}
                   type="button"
                   disabled={isDisabled}
                   onClick={() => setSelectedCardId(isSelected ? null : card.id)}
                   className={`game-card flex-shrink-0 w-20 h-28 lg:w-24 lg:h-32 ${isSelected ? 'selected' : ''}`}
-                  style={{ originX: '50%', originY: '110%', zIndex: isSelected ? 20 : undefined }}
-                  variants={{
-                    hidden: { opacity: 0, y: 48, rotate: 0, scale: 0.8 },
-                    show:   { opacity: 1, y: 0,  rotate: fanAngle, scale: 1 },
-                  }}
-                  transition={{ type: 'spring', stiffness: 240, damping: 20 }}
-                  whileHover={!isDisabled ? { y: -18, rotate: 0, scale: 1.1, filter: 'drop-shadow(0 0 14px rgba(197,160,89,0.5))' } : {}}
-                  whileTap={!isDisabled ? { scale: 0.96 } : {}}
+                  style={{ zIndex: isSelected ? 20 : undefined }}
                 >
                   <img src={card.imageUrl} alt="Hand card" className="aspect-[3/4] w-full h-full object-cover rounded-[0.65rem]" />
-                </motion.button>
+                </button>
               )
             })}
             {handCards.length === 0 && <p className="py-4 text-sm italic text-muted-foreground">No cards in hand</p>}
-          </motion.div>
+          </div>
 
           {submitLabel && (
             <motion.button

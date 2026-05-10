@@ -1038,52 +1038,36 @@ export default function RoomPage() {
 
       {/* ── Main game area (flexbox skeleton: header, main stage, action tray) ── */}
       <div className={`flex flex-col flex-1 max-w-4xl mx-auto w-full px-4 lg:px-6 relative ${gameState.status === 'SCORING' ? 'overflow-y-auto' : ''}`}>
-        {/* Clue banner - notch-safe fixed position with animation */}
-        <AnimatePresence>
-          {gameState.currentClue && gameState.status !== 'FINISHED' && (
-            <motion.div
-              key="clue-banner"
-              initial={{ opacity: 0, y: -16, filter: 'blur(4px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: -12, filter: 'blur(3px)' }}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-              className="fixed left-1/2 -translate-x-1/2 z-30 w-full max-w-xl px-4"
-              style={{ top: 'calc(env(safe-area-inset-top, 0px) + 4.5rem)' }}
-            >
-              <div className="clue-banner px-8 py-3 text-center">
-                <p className="font-serif text-lg font-medium italic text-foreground tracking-wide">
-                  &ldquo;{sanitizeDisplayText(gameState.currentClue, 500)}&rdquo;
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Clue banner */}
+        {gameState.currentClue && gameState.status !== 'FINISHED' && (
+          <div
+            className="fixed left-1/2 -translate-x-1/2 z-30 w-full max-w-xl px-4"
+            style={{ top: 'calc(env(safe-area-inset-top, 0px) + 4.5rem)' }}
+          >
+            <div className="clue-banner px-8 py-3 text-center">
+              <p className="font-serif text-lg font-medium italic text-foreground tracking-wide">
+                &ldquo;{sanitizeDisplayText(gameState.currentClue, 500)}&rdquo;
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Main Stage (expanding) */}
         <div className={`flex flex-1 flex-col gap-3 relative ${gameState.status === 'SCORING' ? 'pt-16' : 'pt-24'}`}>
           {/* Storytelling clue input */}
-          <AnimatePresence>
-            {gameState.status === 'STORYTELLING' && isStoryteller && (
-              <motion.div
-                key="clue-input"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.35 }}
-                className="z-10"
-              >
-                <form onSubmit={handleMainAction} className="flex gap-2">
-                  <input
-                    value={clue}
-                    onChange={(e) => setClue(e.target.value)}
-                    placeholder="Whisper your clue to the cosmos…"
-                    maxLength={140}
-                    className="input-celestial flex-1 px-4 py-2.5 text-sm font-serif italic"
-                  />
-                </form>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {gameState.status === 'STORYTELLING' && isStoryteller && (
+            <div className="z-10">
+              <form onSubmit={handleMainAction} className="flex gap-2">
+                <input
+                  value={clue}
+                  onChange={(e) => setClue(e.target.value)}
+                  placeholder="Whisper your clue to the cosmos…"
+                  maxLength={140}
+                  className="input-celestial flex-1 px-4 py-2.5 text-sm font-serif italic"
+                />
+              </form>
+            </div>
+          )}
 
           {/* Scoring cards - no circle */}
           {gameState.status === 'SCORING' && (
@@ -1132,24 +1116,23 @@ export default function RoomPage() {
             </div>
           )}
 
+          {/* Selected card preview — fixed overlay, outside board DOM so it never causes board re-layout */}
+          {selectedCardId && (gameState.status === 'STORYTELLING' || gameState.status === 'BLUFFING') && (() => {
+            const selectedCard = handCards.find((card) => card.id === selectedCardId)
+            return selectedCard ? (
+              <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+                <div className="relative w-32 h-44 sm:w-40 sm:h-56 rounded-xl overflow-hidden border-2 border-gold/50 shadow-[0_0_24px_rgba(201,168,76,0.5)]">
+                  <img src={selectedCard.imageUrl} alt="Selected card" className="w-full h-full object-cover" />
+                </div>
+              </div>
+            ) : null
+          })()}
+
           {/* Board area with submitted cards - circular table (non-scoring phases) */}
           {gameState.status !== 'FINISHED' && gameState.status !== 'SCORING' && (
           <div className="flex items-center justify-center p-6 relative mx-auto flex-1 flex-shrink min-h-[200px] max-h-[40vh] aspect-square">
             <div className="game-table relative w-full max-w-2xl z-10 aspect-square">
               <div className="circle-cards absolute inset-0 flex items-center justify-center">
-                {/* ── Zoomed selected card display (centered in circle) ── */}
-                {selectedCardId && (gameState.status === 'STORYTELLING' || gameState.status === 'BLUFFING') && (
-                  <div className="z-20">
-                    {(() => {
-                      const selectedCard = handCards.find((card) => card.id === selectedCardId)
-                      return selectedCard ? (
-                        <div className="relative w-32 h-44 sm:w-40 sm:h-56 rounded-xl overflow-hidden border-2 border-gold/50 shadow-[0_0_24px_rgba(201,168,76,0.5)]">
-                          <img src={selectedCard.imageUrl} alt="Selected card" className="w-full h-full object-cover" />
-                        </div>
-                      ) : null
-                    })()}
-                  </div>
-                )}
 
                 <>
                   {boardCards.length === 0 && gameState.status !== 'BLUFFING' && gameState.status !== 'STORYTELLING' ? (
@@ -1452,10 +1435,7 @@ export default function RoomPage() {
 
       {/* ── Scoring overlay ── */}
       {gameState.status === 'SCORING' && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+        <div
           className="hand-tray px-4 py-4 sm:px-6 pb-20 lg:pb-4 mt-20 lg:mt-0"
         >
           <p className="mb-2 font-serif text-xs italic text-[#c5a059]/80">{lastSarcasticMessage || getCynicalRoundMessage(gameState, gameState.votes, gameState.cards)}</p>
@@ -1475,7 +1455,7 @@ export default function RoomPage() {
               )
             })}
           </div>
-        </motion.div>
+        </div>
       )}
       </div>
     </main>

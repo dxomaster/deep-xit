@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { mapCard, mapPlayer, mapRoom, mapVote } from '@/lib/game/mappers'
 import type { Card, Player, RoomStatus, UUID, Vote } from '@/lib/game/types'
@@ -48,8 +48,15 @@ export function useGameState(roomId: UUID | null | undefined, currentPlayerId?: 
   const [gameState, setGameState] = useState<GameState>(emptyGameState)
   const [isLoading, setIsLoading] = useState(Boolean(roomId))
   const [error, setError] = useState<string | null>(null)
+  const hasLoadedRef = useRef(false)
 
-  const refresh = useMemo(() => createRefreshGameState(supabase, roomId, currentPlayerId ?? null, setGameState, setIsLoading, setError), [roomId, currentPlayerId, supabase])
+  const refresh = useMemo(() => createRefreshGameState(supabase, roomId, currentPlayerId ?? null, setGameState, (loading) => {
+    // Only show the loading screen on the very first load — not on background refreshes
+    if (!hasLoadedRef.current) {
+      setIsLoading(loading)
+      if (!loading) hasLoadedRef.current = true
+    }
+  }, setError), [roomId, currentPlayerId, supabase])
 
   useEffect(() => {
     if (!roomId) {

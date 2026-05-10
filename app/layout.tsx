@@ -37,6 +37,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <div className="stars-layer" />
+        <div className="nebula-left" />
+        <div className="nebula-right" />
+        <div className="nebula-mid" />
         {children}
         <Analytics />
         <SpeedInsights />

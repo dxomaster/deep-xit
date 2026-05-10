@@ -930,8 +930,6 @@ export default function RoomPage() {
 
   return (
     <main className={`game-bg relative h-screen ${gameState.status === 'SCORING' ? 'overflow-y-auto' : 'overflow-hidden'}`}>
-      {/* Atmospheric layer — outside flex flow */}
-      <div className="stars-layer" />
       <div className={`flex h-full flex-col ${gameState.status === 'SCORING' ? 'min-h-screen' : ''}`}>
       {/* Celestial loading overlay */}
       <AnimatePresence>

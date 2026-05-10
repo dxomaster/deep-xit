@@ -6,8 +6,12 @@ import { NextResponse } from 'next/server'
  * within a single request context.
  */
 
-// Track requests within this function invocation
-const requestTracker = new Map<string, number>()
+// Track requests with timestamps within this function invocation
+interface RequestEntry {
+  count: number
+  resetTime: number
+}
+const requestTracker = new Map<string, RequestEntry>()
 
 interface RateLimitConfig {
   maxRequests: number
@@ -16,8 +20,7 @@ interface RateLimitConfig {
 
 /**
  * Apply rate limiting in a serverless-safe way
- * Uses a combination of IP tracking within the request context
- * and optional KV store for persistence across invocations
+ * Tracks requests with timestamps to respect the time window
  */
 export async function applyServerlessRateLimit(
   request: Request,
@@ -26,23 +29,37 @@ export async function applyServerlessRateLimit(
 ): Promise<NextResponse | null> {
   const clientId = getClientIdentifier(request)
   const key = `${endpoint}:${clientId}`
+  const now = Date.now()
   
-  // Check current count in this invocation
-  const currentCount = requestTracker.get(key) || 0
+  // Get or create entry
+  let entry = requestTracker.get(key)
   
-  if (currentCount >= config.maxRequests) {
+  // Reset if time window has expired
+  if (!entry || now > entry.resetTime) {
+    entry = { count: 0, resetTime: now + config.windowMs }
+    requestTracker.set(key, entry)
+  }
+  
+  // Check if limit exceeded
+  if (entry.count >= config.maxRequests) {
+    const retryAfter = Math.ceil((entry.resetTime - now) / 1000)
     return NextResponse.json(
       { error: 'Too many requests. Please try again later.' },
-      { status: 429, headers: { 'Retry-After': '60' } }
+      { status: 429, headers: { 'Retry-After': retryAfter.toString() } }
     )
   }
   
   // Increment counter
-  requestTracker.set(key, currentCount + 1)
+  entry.count += 1
   
   // Clean up old entries periodically (simple memory management)
   if (requestTracker.size > 1000) {
-    requestTracker.clear()
+    const cutoff = now - 60000 // 1 minute ago
+    for (const [k, v] of requestTracker) {
+      if (v.resetTime < cutoff) {
+        requestTracker.delete(k)
+      }
+    }
   }
   
   return null

@@ -818,6 +818,7 @@
   border-color: #d4af5a;
   border-width: 2px;
   animation: card-select-pulse 1.8s ease-in-out infinite;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 /* Selected card loses corner brackets (replaced by full border glow) */

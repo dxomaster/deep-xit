@@ -1359,15 +1359,14 @@ export default function RoomPage() {
                   disabled={isDisabled}
                   onClick={() => setSelectedCardId(isSelected ? null : card.id)}
                   className={`game-card flex-shrink-0 min-w-[56px] w-14 h-20 sm:w-16 sm:h-24 ${isSelected ? 'selected' : ''}`}
-                  style={{ originX: '50%', originY: '110%' }}
+                  style={{ originX: '50%', originY: '110%', zIndex: isSelected ? 20 : undefined }}
                   variants={{
                     hidden: { opacity: 0, y: 40, rotate: 0, scale: 0.85 },
                     show:   { opacity: 1, y: 0,  rotate: fanAngle, scale: 1 },
                   }}
                   transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-                  whileHover={!isDisabled ? { y: -10, rotate: 0, scale: 1.08, zIndex: 20, filter: 'drop-shadow(0 0 10px rgba(197,160,89,0.45))' } : {}}
+                  whileHover={!isDisabled ? { y: -12, rotate: 0, scale: 1.08, filter: 'drop-shadow(0 0 10px rgba(197,160,89,0.45))' } : {}}
                   whileTap={!isDisabled ? { scale: 0.95 } : {}}
-                  animate={isSelected ? { y: -16, rotate: 0, scale: 1.1, zIndex: 20 } : { y: 0, rotate: fanAngle, scale: 1 }}
                 >
                   <img src={card.imageUrl} alt="Hand card" className="aspect-[3/4] w-full h-full object-cover rounded-[0.65rem]" />
                 </motion.button>
@@ -1434,15 +1433,14 @@ export default function RoomPage() {
                   disabled={isDisabled}
                   onClick={() => setSelectedCardId(isSelected ? null : card.id)}
                   className={`game-card flex-shrink-0 w-20 h-28 lg:w-24 lg:h-32 ${isSelected ? 'selected' : ''}`}
-                  style={{ originX: '50%', originY: '110%' }}
+                  style={{ originX: '50%', originY: '110%', zIndex: isSelected ? 20 : undefined }}
                   variants={{
                     hidden: { opacity: 0, y: 48, rotate: 0, scale: 0.8 },
                     show:   { opacity: 1, y: 0,  rotate: fanAngle, scale: 1 },
                   }}
                   transition={{ type: 'spring', stiffness: 240, damping: 20 }}
-                  whileHover={!isDisabled ? { y: -18, rotate: 0, scale: 1.1, zIndex: 20, filter: 'drop-shadow(0 0 14px rgba(197,160,89,0.5))' } : {}}
+                  whileHover={!isDisabled ? { y: -18, rotate: 0, scale: 1.1, filter: 'drop-shadow(0 0 14px rgba(197,160,89,0.5))' } : {}}
                   whileTap={!isDisabled ? { scale: 0.96 } : {}}
-                  animate={isSelected ? { y: -22, rotate: 0, scale: 1.12, zIndex: 20 } : { y: 0, rotate: fanAngle, scale: 1 }}
                 >
                   <img src={card.imageUrl} alt="Hand card" className="aspect-[3/4] w-full h-full object-cover rounded-[0.65rem]" />
                 </motion.button>

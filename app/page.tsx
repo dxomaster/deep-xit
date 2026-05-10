@@ -72,15 +72,16 @@ export default function HomePage() {
   }
 
   return (
-    <main className="game-bg flex min-h-screen items-center justify-center px-5 py-10">
-      {/* Starfield layer 3 */}
+    <main className="game-bg relative min-h-screen px-5 py-10">
+      {/* Atmospheric layers — outside flex flow so they don't shift content */}
       <div className="stars-layer" />
-      {/* Nebula blobs */}
       <div className="nebula-left" />
       <div className="nebula-right" />
 
+      {/* Centered content column */}
+      <div className="relative z-10 flex min-h-screen items-center justify-center">
       <motion.div
-        className="flex w-full max-w-md flex-col items-center gap-8 relative z-10"
+        className="flex w-full max-w-md flex-col items-center gap-8"
         variants={stagger}
         initial="hidden"
         animate="show"
@@ -196,6 +197,7 @@ export default function HomePage() {
           </motion.p>
         )}
       </motion.div>
+      </div>
     </main>
   )
 }

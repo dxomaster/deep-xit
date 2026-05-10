@@ -1,7 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
 @import 'tailwindcss';
 @import 'tw-animate-css';
-
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -447,9 +447,6 @@
    ══════════════════════════════════════════════ */
 
 .hand-tray-horizontal {
-  display: flex;
-  align-items: flex-end;
-  gap: 1.5rem;
   padding: 1.5rem 2rem;
   background:
     linear-gradient(180deg, rgba(255,245,220,0.02) 0%, transparent 20%),

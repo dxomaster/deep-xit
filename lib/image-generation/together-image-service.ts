@@ -368,7 +368,12 @@ Keep all content strictly G-rated and family-safe.`
       console.warn(`Image generation complete: ${successfulImages.length}/${images.length} successful`)
     }
     
-    return successfulImages.length > 0 ? successfulImages : images
+    // Fail fast if all images failed - room-service.ts expects valid URLs
+    if (successfulImages.length === 0) {
+      throw new Error(`All ${images.length} image generations failed`)
+    }
+    
+    return successfulImages
   }
 
   buildPrompt(theme: string): string {

@@ -324,22 +324,56 @@ Avoid repetitive patterns or similar visual elements.
 Keep all content strictly G-rated and family-safe.`
     })
 
-    // Generate images in parallel with concurrency limit and delays to avoid rate limiting
+    // Generate images in parallel with optimized concurrency
+    // Together AI rate limit: 50 RPM = 1 request per 1.2s
+    // Math: 3 concurrent * 1.2s = 3.6s minimum delay between batches
+    // With 3.6s delay: 50 requests / 3 per batch = ~16 batches/min = 48 images/min
     const images: GeneratedImage[] = []
-    const concurrencyLimit = 2 // Keep low to avoid Together AI 429 rate limits (50 RPM)
+    const concurrencyLimit = 3 // Balanced: good parallelism without hitting limits
+    const delayBetweenBatches = 3600 // 3.6s to respect 50 RPM limit
     
     for (let i = 0; i < prompts.length; i += concurrencyLimit) {
       const batch = prompts.slice(i, i + concurrencyLimit)
-      const batchResults = await Promise.all(
+      
+      // Use Promise.allSettled to handle partial failures gracefully
+      const batchResults = await Promise.allSettled(
         batch.map(prompt => this.generateSingleImageWithRetry(prompt))
       )
-      images.push(...batchResults)
-      // Add delay between batches to stay under rate limit
+      
+      // Process results - filter out failures and log errors
+      batchResults.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          images.push(result.value)
+        } else {
+          console.error(`Failed to generate image ${i + index + 1}/${prompts.length}:`, result.reason)
+          // Push a placeholder that will be handled by fallback logic
+          images.push({ 
+            url: '', 
+            prompt: batch[index],
+            error: result.reason instanceof Error ? result.reason.message : 'Unknown error'
+          } as GeneratedImage)
+        }
+      })
+      
+      // Shorter delay between batches for faster overall generation
       if (i + concurrencyLimit < prompts.length) {
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        await new Promise(resolve => setTimeout(resolve, delayBetweenBatches))
       }
     }
-    return images
+    
+    // Filter out failed images and log summary
+    const successfulImages = images.filter(img => img.url && !img.error)
+    const failedCount = images.length - successfulImages.length
+    if (failedCount > 0) {
+      console.warn(`Image generation complete: ${successfulImages.length}/${images.length} successful`)
+    }
+    
+    // Fail fast if any images failed - callers expect exactly count images
+    if (successfulImages.length < prompts.length) {
+      throw new Error(`Image generation failed: ${successfulImages.length}/${prompts.length} succeeded. ${failedCount} image(s) failed to generate.`)
+    }
+    
+    return successfulImages
   }
 
   buildPrompt(theme: string): string {
@@ -378,9 +412,9 @@ Keep all content strictly G-rated and family-safe.`
     }
 
     try {
-      // Add timeout controller (120 seconds)
+      // Add timeout controller (45 seconds - FLUX.1-schnell is optimized for speed)
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 120000)
+      const timeoutId = setTimeout(() => controller.abort(), 45000)
 
       const response = await fetch(this.endpoint, {
         method: 'POST',

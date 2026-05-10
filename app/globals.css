@@ -1,7 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
 @import 'tailwindcss';
 @import 'tw-animate-css';
-
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -45,7 +45,7 @@
 @theme inline {
   --font-sans: 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
-  --font-serif: 'Cinzel', 'Playfair Display', serif;
+  --font-serif: 'Playfair Display', 'Cinzel', serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -82,7 +82,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --color-gold: #d4af5a;
+  --color-gold: #c5a059;
+  --color-gold-bright: #d4af5a;
   --color-purple-deep: #160c28;
 }
 
@@ -92,98 +93,402 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Playfair Display', Georgia, serif;
     background: 
       radial-gradient(ellipse at 20% 0%, rgba(88, 28, 135, 0.15) 0%, transparent 50%),
       radial-gradient(ellipse at 80% 100%, rgba(88, 28, 135, 0.1) 0%, transparent 50%),
       radial-gradient(ellipse at 50% 50%, rgba(30, 15, 60, 0.4) 0%, transparent 70%),
-      linear-gradient(180deg, #0a0612 0%, #0e0818 40%, #0a0612 100%);
+      linear-gradient(180deg, #0f0a1e 0%, #0a0612 40%, #000000 100%);
     min-height: 100vh;
   }
 
-  /* Custom scrollbar for the whole app */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: rgba(197, 160, 89, 0.25);
-    border-radius: 3px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(197, 160, 89, 0.4);
-  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(197, 160, 89, 0.25); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(197, 160, 89, 0.45); }
 }
 
 /* ══════════════════════════════════════════════
-   Starfield & Atmospheric Background
+   KEYFRAME ANIMATIONS
+   ══════════════════════════════════════════════ */
+
+/* Title gold breathing glow */
+@keyframes gold-breathe {
+  0%, 100% {
+    text-shadow:
+      0 0 18px rgba(197, 160, 89, 0.4),
+      0 0 36px rgba(197, 160, 89, 0.18),
+      0 0 60px rgba(197, 160, 89, 0.08);
+  }
+  50% {
+    text-shadow:
+      0 0 28px rgba(197, 160, 89, 0.7),
+      0 0 56px rgba(197, 160, 89, 0.35),
+      0 0 90px rgba(197, 160, 89, 0.15);
+  }
+}
+
+/* Storyteller avatar pulsing ring */
+@keyframes storyteller-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 2px #c5a059,
+      0 0 10px rgba(197, 160, 89, 0.4),
+      0 0 24px rgba(197, 160, 89, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px #d4af5a,
+      0 0 20px rgba(212, 175, 90, 0.65),
+      0 0 44px rgba(212, 175, 90, 0.22);
+  }
+}
+
+/* Button shimmer sweep */
+@keyframes btn-shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* Card sigil pulse on card backs */
+@keyframes sigil-pulse {
+  0%, 100% {
+    opacity: 0.28;
+    filter: drop-shadow(0 0 5px rgba(197, 160, 89, 0.3));
+  }
+  50% {
+    opacity: 0.58;
+    filter: drop-shadow(0 0 14px rgba(197, 160, 89, 0.65));
+  }
+}
+
+/* Selected card outer glow pulse */
+@keyframes card-select-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(197, 160, 89, 0.45),
+      0 0 40px rgba(197, 160, 89, 0.18),
+      inset 0 0 12px rgba(197, 160, 89, 0.06);
+  }
+  50% {
+    box-shadow:
+      0 0 34px rgba(197, 160, 89, 0.7),
+      0 0 68px rgba(197, 160, 89, 0.28),
+      inset 0 0 20px rgba(197, 160, 89, 0.1);
+  }
+}
+
+/* Parallax starfield layers — three independent blink cadences */
+@keyframes twinkle-slow {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.75; }
+}
+@keyframes twinkle-mid {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+@keyframes twinkle-fast {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
+}
+
+/* Nebula drift */
+@keyframes nebula-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(20px, -14px) scale(1.06); }
+  66%  { transform: translate(-14px, 18px) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+/* Shooting star */
+@keyframes shoot {
+  0%   { transform: translateX(0) translateY(0); opacity: 1; }
+  100% { transform: translateX(300px) translateY(120px); opacity: 0; }
+}
+
+/* Milky Way shimmer */
+@keyframes milky-shimmer {
+  0%, 100% { opacity: 0.18; }
+  50%       { opacity: 0.28; }
+}
+
+/* Loading orb pulse */
+@keyframes orb-pulse {
+  0%, 100% { transform: scale(0.88); opacity: 0.7; }
+  50%       { transform: scale(1.18); opacity: 1; }
+}
+
+/* Score delta pop-in */
+@keyframes score-pop {
+  0%   { transform: scale(1.5) translateY(-6px); opacity: 0; }
+  60%  { transform: scale(0.92) translateY(2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Input focus shimmer */
+@keyframes input-focus-glow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(197, 160, 89, 0.5), 0 0 12px rgba(197, 160, 89, 0.15); }
+  50%       { box-shadow: 0 0 0 1px rgba(212, 175, 90, 0.75), 0 0 20px rgba(212, 175, 90, 0.28); }
+}
+
+/* ══════════════════════════════════════════════
+   3-LAYER PARALLAX STARFIELD BACKGROUND
    ══════════════════════════════════════════════ */
 
 .game-bg {
   position: relative;
-  background: 
-    radial-gradient(ellipse at 20% 0%, rgba(88, 28, 135, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 100%, rgba(88, 28, 135, 0.1) 0%, transparent 50%),
-    linear-gradient(180deg, #0a0612 0%, #0e0818 40%, #0a0612 100%);
+  background:
+    /* Milky Way diagonal band */
+    linear-gradient(125deg, transparent 20%, rgba(80, 40, 140, 0.12) 35%, rgba(100, 60, 180, 0.18) 45%, rgba(60, 30, 110, 0.1) 60%, transparent 75%),
+    /* Deep blue void top-left */
+    radial-gradient(ellipse at 5% 10%, rgba(20, 10, 80, 0.6) 0%, transparent 45%),
+    /* Rich purple nebula top-right */
+    radial-gradient(ellipse at 95% 5%, rgba(100, 20, 160, 0.25) 0%, transparent 40%),
+    /* Warm core center */
+    radial-gradient(ellipse at 50% 50%, rgba(40, 15, 80, 0.5) 0%, transparent 60%),
+    /* Purple bloom bottom-left */
+    radial-gradient(ellipse at 0% 100%, rgba(88, 28, 135, 0.22) 0%, transparent 45%),
+    /* Blue-purple bloom bottom-right */
+    radial-gradient(ellipse at 100% 90%, rgba(30, 20, 120, 0.2) 0%, transparent 40%),
+    linear-gradient(180deg, #06030f 0%, #0a0518 30%, #080416 60%, #000000 100%);
   min-height: 100vh;
 }
 
+/* Layer 1 — dense distant stars, slow 22s blink */
 .game-bg::before {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    /* Bright stars */
-    radial-gradient(1.5px 1.5px at 10% 15%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
-    radial-gradient(1px 1px at 20% 35%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 30% 65%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
-    radial-gradient(1px 1px at 45% 10%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 55% 85%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 65% 40%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 75% 70%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
-    radial-gradient(1px 1px at 85% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
-    radial-gradient(1px 1px at 92% 55%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
-    /* Gold stars */
-    radial-gradient(2px 2px at 8% 50%, rgba(212, 175, 90, 0.6) 0%, transparent 100%),
-    radial-gradient(2px 2px at 38% 25%, rgba(212, 175, 90, 0.5) 0%, transparent 100%),
-    radial-gradient(2px 2px at 68% 80%, rgba(212, 175, 90, 0.4) 0%, transparent 100%),
-    radial-gradient(2px 2px at 88% 45%, rgba(212, 175, 90, 0.5) 0%, transparent 100%),
-    /* Dim distant stars */
-    radial-gradient(0.5px 0.5px at 5% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 100%),
-    radial-gradient(0.5px 0.5px at 15% 55%, rgba(255, 255, 255, 0.25) 0%, transparent 100%),
-    radial-gradient(0.5px 0.5px at 25% 90%, rgba(255, 255, 255, 0.3) 0%, transparent 100%),
-    radial-gradient(0.5px 0.5px at 50% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 100%),
-    radial-gradient(0.5px 0.5px at 60% 60%, rgba(255, 255, 255, 0.25) 0%, transparent 100%),
-    radial-gradient(0.5px 0.5px at 78% 15%, rgba(255, 255, 255, 0.3) 0%, transparent 100%),
-    radial-gradient(0.5px 0.5px at 95% 75%, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+  inset: 0;
+  will-change: opacity;
+  transform: translateZ(0);
+  background-image:
+    /* Cool blue-white distant stars */
+    radial-gradient(0.6px 0.6px at 3%  8%,  rgba(200,220,255,0.4)  0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 7%  35%, rgba(220,235,255,0.3)  0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 11% 62%, rgba(200,220,255,0.35) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 15% 18%, rgba(230,240,255,0.28) 0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 19% 88%, rgba(200,220,255,0.38) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 23% 44%, rgba(220,235,255,0.25) 0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 27% 72%, rgba(200,220,255,0.3)  0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 31% 5%,  rgba(230,240,255,0.32) 0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 36% 55%, rgba(200,220,255,0.28) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 41% 28%, rgba(220,235,255,0.35) 0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 45% 80%, rgba(200,220,255,0.3)  0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 50% 15%, rgba(230,240,255,0.25) 0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 54% 67%, rgba(200,220,255,0.38) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 59% 42%, rgba(220,235,255,0.28) 0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 63% 92%, rgba(200,220,255,0.32) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 67% 22%, rgba(230,240,255,0.3)  0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 72% 58%, rgba(200,220,255,0.35) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 76% 78%, rgba(220,235,255,0.28) 0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 80% 12%, rgba(200,220,255,0.4)  0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 84% 48%, rgba(230,240,255,0.25) 0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 88% 85%, rgba(200,220,255,0.32) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 93% 32%, rgba(220,235,255,0.3)  0%, transparent 100%),
+    radial-gradient(0.6px 0.6px at 96% 65%, rgba(200,220,255,0.28) 0%, transparent 100%),
+    radial-gradient(0.5px 0.5px at 99% 18%, rgba(230,240,255,0.35) 0%, transparent 100%);
   pointer-events: none;
   z-index: 0;
-  animation: twinkle 8s ease-in-out infinite alternate;
+  animation: twinkle-slow 22s ease-in-out infinite alternate;
+  backface-visibility: hidden;
 }
 
-@keyframes twinkle {
-  0% { opacity: 0.8; }
-  50% { opacity: 1; }
-  100% { opacity: 0.85; }
-}
-
+/* Layer 2 — mid stars, gold & blue flecks, 14s blink */
 .game-bg::after {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(ellipse at 15% 15%, rgba(120, 60, 180, 0.08) 0%, transparent 40%),
-    radial-gradient(ellipse at 85% 85%, rgba(100, 50, 160, 0.06) 0%, transparent 40%),
-    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 90, 0.03) 0%, transparent 30%);
+  inset: 0;
+  will-change: opacity;
+  transform: translateZ(0);
+  background-image:
+    /* White mid stars */
+    radial-gradient(1px 1px   at 4%  25%,  rgba(255,255,255,0.65) 0%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 9%  72%, rgba(255,255,255,0.75) 0%, transparent 100%),
+    radial-gradient(1px 1px   at 14% 44%,  rgba(255,255,255,0.6)  0%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 20% 10%, rgba(255,255,255,0.7)  0%, transparent 100%),
+    radial-gradient(1px 1px   at 26% 85%,  rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 32% 55%, rgba(255,255,255,0.68) 0%, transparent 100%),
+    radial-gradient(1px 1px   at 38% 30%,  rgba(255,255,255,0.6)  0%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 44% 68%, rgba(255,255,255,0.72) 0%, transparent 100%),
+    radial-gradient(1px 1px   at 51% 20%,  rgba(255,255,255,0.58) 0%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 57% 90%, rgba(255,255,255,0.65) 0%, transparent 100%),
+    radial-gradient(1px 1px   at 62% 38%,  rgba(255,255,255,0.7)  0%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 69% 62%, rgba(255,255,255,0.62) 0%, transparent 100%),
+    radial-gradient(1px 1px   at 74% 15%,  rgba(255,255,255,0.68) 0%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 79% 50%, rgba(255,255,255,0.6)  0%, transparent 100%),
+    radial-gradient(1px 1px   at 86% 78%,  rgba(255,255,255,0.72) 0%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 91% 35%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px   at 95% 88%,  rgba(255,255,255,0.65) 0%, transparent 100%),
+    /* Gold star flecks */
+    radial-gradient(2px 2px at 6%  55%,  rgba(212,175,90,0.65) 0%, transparent 100%),
+    radial-gradient(1.8px 1.8px at 17% 20%, rgba(212,175,90,0.55) 0%, transparent 100%),
+    radial-gradient(2.2px 2.2px at 29% 75%, rgba(197,160,89,0.7)  0%, transparent 100%),
+    radial-gradient(1.8px 1.8px at 43% 40%, rgba(212,175,90,0.5)  0%, transparent 100%),
+    radial-gradient(2px 2px at 56% 12%,  rgba(197,160,89,0.6)  0%, transparent 100%),
+    radial-gradient(1.8px 1.8px at 65% 82%, rgba(212,175,90,0.55) 0%, transparent 100%),
+    radial-gradient(2.2px 2.2px at 77% 28%, rgba(197,160,89,0.65) 0%, transparent 100%),
+    radial-gradient(2px 2px at 89% 60%,  rgba(212,175,90,0.5)  0%, transparent 100%),
+    /* Blue-tint stars */
+    radial-gradient(1.5px 1.5px at 12% 92%, rgba(150,180,255,0.55) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35% 8%,  rgba(140,170,255,0.5)  0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 50%, rgba(150,180,255,0.55) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 83% 95%, rgba(140,170,255,0.45) 0%, transparent 100%);
   pointer-events: none;
   z-index: 0;
+  animation: twinkle-mid 14s ease-in-out infinite alternate;
+  animation-delay: -5s;
+  backface-visibility: hidden;
+}
+
+/* Layer 3 — bright hero stars + Milky Way band + shooting star */
+.stars-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  background-image:
+    /* Bright hero stars — varied sizes */
+    radial-gradient(2.5px 2.5px at 7%  18%, rgba(255,255,255,0.95) 0%, transparent 100%),
+    radial-gradient(2px 2px   at 16% 72%, rgba(255,250,240,0.9)  0%, transparent 100%),
+    radial-gradient(3px 3px   at 24% 35%, rgba(255,255,255,1)    0%, transparent 100%),
+    radial-gradient(2px 2px   at 33% 88%, rgba(240,245,255,0.88) 0%, transparent 100%),
+    radial-gradient(2.5px 2.5px at 42% 22%, rgba(255,255,255,0.92) 0%, transparent 100%),
+    radial-gradient(2px 2px   at 53% 58%, rgba(255,250,235,0.85) 0%, transparent 100%),
+    radial-gradient(3px 3px   at 61% 8%,  rgba(255,255,255,0.95) 0%, transparent 100%),
+    radial-gradient(2px 2px   at 70% 44%, rgba(240,248,255,0.9)  0%, transparent 100%),
+    radial-gradient(2.5px 2.5px at 78% 78%, rgba(255,255,255,0.88) 0%, transparent 100%),
+    radial-gradient(2px 2px   at 87% 28%, rgba(255,250,240,0.92) 0%, transparent 100%),
+    radial-gradient(3px 3px   at 93% 60%, rgba(255,255,255,1)    0%, transparent 100%),
+    radial-gradient(2px 2px   at 98% 85%, rgba(240,245,255,0.85) 0%, transparent 100%),
+    /* Warm gold bright stars */
+    radial-gradient(2.5px 2.5px at 20% 50%, rgba(255,220,120,0.9) 0%, transparent 100%),
+    radial-gradient(2px 2px   at 48% 80%, rgba(255,210,100,0.85) 0%, transparent 100%),
+    radial-gradient(2.5px 2.5px at 75% 15%, rgba(255,220,120,0.9) 0%, transparent 100%),
+    /* Milky Way diffuse band */
+    linear-gradient(118deg,
+      transparent 15%,
+      rgba(180,160,220,0.06) 28%,
+      rgba(200,180,240,0.1)  38%,
+      rgba(160,140,210,0.08) 50%,
+      rgba(180,160,220,0.05) 60%,
+      transparent 72%
+    );
+  animation: twinkle-fast 8s ease-in-out infinite alternate;
+  animation-delay: -2s;
+}
+
+/* Shooting star element */
+.stars-layer::before {
+  content: '';
+  position: absolute;
+  top: 18%;
+  left: 5%;
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
+  border-radius: 2px;
+  transform-origin: left center;
+  animation: shoot 8s ease-in-out 3s infinite;
+  opacity: 0;
+}
+.stars-layer::after {
+  content: '';
+  position: absolute;
+  top: 62%;
+  left: 55%;
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(212,175,90,0.85) 50%, rgba(255,255,255,0) 100%);
+  border-radius: 2px;
+  transform-origin: left center;
+  animation: shoot 12s ease-in-out 7s infinite;
+  opacity: 0;
+}
+
+/* Nebula atmospheric blobs */
+.nebula-left {
+  position: fixed;
+  bottom: -10%;
+  left: -8%;
+  width: 700px;
+  height: 700px;
+  will-change: transform;
+  backface-visibility: hidden;
+  background: radial-gradient(ellipse at 40% 60%,
+    rgba(100, 40, 200, 0.22) 0%,
+    rgba(80, 20, 160, 0.14) 35%,
+    rgba(40, 10, 100, 0.06) 65%,
+    transparent 100%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+  animation: nebula-drift 28s ease-in-out infinite;
+}
+.nebula-right {
+  position: fixed;
+  top: -8%;
+  right: -8%;
+  width: 650px;
+  height: 650px;
+  will-change: transform;
+  backface-visibility: hidden;
+  background: radial-gradient(ellipse at 60% 40%,
+    rgba(40, 20, 140, 0.2) 0%,
+    rgba(60, 30, 160, 0.12) 30%,
+    rgba(197, 160, 89, 0.06) 60%,
+    transparent 100%);
+  filter: blur(65px);
+  pointer-events: none;
+  z-index: 0;
+  animation: nebula-drift 34s ease-in-out infinite reverse;
+}
+
+/* Teal nebula — mid screen */
+.nebula-mid {
+  position: fixed;
+  top: 35%;
+  left: 30%;
+  width: 500px;
+  height: 400px;
+  will-change: transform;
+  backface-visibility: hidden;
+  background: radial-gradient(ellipse at center,
+    rgba(20, 80, 140, 0.1) 0%,
+    rgba(10, 60, 120, 0.06) 50%,
+    transparent 100%);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+  animation: nebula-drift 42s ease-in-out infinite;
+  animation-delay: -15s;
+}
+
+@media (max-width: 1024px) {
+  .game-bg::before,
+  .game-bg::after,
+  .stars-layer {
+    animation: none;
+  }
+  .nebula-left,
+  .nebula-right,
+  .nebula-mid {
+    animation: none;
+    filter: blur(80px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-bg::before,
+  .game-bg::after,
+  .stars-layer,
+  .nebula-left,
+  .nebula-right,
+  .nebula-mid {
+    animation: none;
+  }
 }
 
 .game-bg > * {
@@ -192,19 +497,32 @@
 }
 
 /* ══════════════════════════════════════════════
-   Sticky Header
+   CELESTIAL BORDER UTILITY
+   ══════════════════════════════════════════════ */
+
+.celestial-border {
+  border: 1px solid rgba(197, 160, 89, 0.4);
+  box-shadow:
+    0 0 0 1px rgba(197, 160, 89, 0.1),
+    0 0 14px rgba(197, 160, 89, 0.08),
+    0 0 40px rgba(197, 160, 89, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.7);
+}
+
+/* ══════════════════════════════════════════════
+   STICKY HEADER
    ══════════════════════════════════════════════ */
 
 .game-header {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(10, 6, 18, 0.92);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(197, 160, 89, 0.25);
+  background: rgba(10, 6, 18, 0.94);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(197, 160, 89, 0.28);
   box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.6),
-    0 1px 0 rgba(197, 160, 89, 0.1);
+    0 4px 20px rgba(0, 0, 0, 0.7),
+    0 1px 0 rgba(197, 160, 89, 0.12);
 }
 
 .header-title {
@@ -212,66 +530,64 @@
   font-weight: 800;
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
   color: #d4af5a;
-  text-shadow: 
-    0 0 20px rgba(212, 175, 90, 0.4),
-    0 0 40px rgba(212, 175, 90, 0.2);
   letter-spacing: 0.12em;
+  animation: gold-breathe 3.5s ease-in-out infinite;
 }
 
 /* ══════════════════════════════════════════════
-   Glass Panels
+   PARCHMENT GLASS PANELS
    ══════════════════════════════════════════════ */
 
-.frosted-glass {
-  background: linear-gradient(135deg, rgba(14, 8, 24, 0.85) 0%, rgba(10, 6, 18, 0.9) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(197, 160, 89, 0.2);
-  border-radius: 1rem;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.6),
-    0 0 1px rgba(197, 160, 89, 0.3),
-    inset 0 1px 0 rgba(197, 160, 89, 0.05);
-}
-
+.frosted-glass,
 .glass-panel {
-  background: linear-gradient(135deg, rgba(14, 8, 24, 0.85) 0%, rgba(10, 6, 18, 0.9) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(197, 160, 89, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255,245,220,0.028) 0%, transparent 28%),
+    linear-gradient(135deg, rgba(14, 8, 24, 0.88) 0%, rgba(10, 6, 18, 0.94) 100%);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(197, 160, 89, 0.32);
   border-radius: 1rem;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 0 1px rgba(197, 160, 89, 0.3),
-    inset 0 1px 0 rgba(197, 160, 89, 0.05);
+  box-shadow:
+    0 0 0 1px rgba(197, 160, 89, 0.1),
+    0 0 16px rgba(197, 160, 89, 0.07),
+    0 8px 40px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(197, 160, 89, 0.08);
 }
 
 /* ══════════════════════════════════════════════
-   Central Game Table
+   CENTRAL GAME TABLE
    ══════════════════════════════════════════════ */
 
 .game-table {
   position: relative;
   background: 
     radial-gradient(ellipse at center, rgba(22, 12, 40, 0.9) 0%, rgba(10, 6, 18, 0.98) 100%);
-  border: 1px solid rgba(197, 160, 89, 0.3);
+  border: 1px solid rgba(197, 160, 89, 0.38);
   border-radius: 50%;
   box-shadow: 
-    inset 0 0 120px rgba(88, 28, 135, 0.12),
-    inset 0 0 60px rgba(197, 160, 89, 0.06),
-    0 0 60px rgba(88, 28, 135, 0.2),
+    inset 0 0 140px rgba(88, 28, 135, 0.14),
+    inset 0 0 70px rgba(197, 160, 89, 0.07),
+    0 0 0 1px rgba(197, 160, 89, 0.12),
+    0 0 60px rgba(88, 28, 135, 0.22),
     0 0 120px rgba(10, 6, 18, 0.8);
   max-width: 75vh;
   max-height: 75vh;
   overflow: visible;
-  clip-path: none;
 }
 
-/* Subtle ornate inner ring */
 .game-table::before {
   content: '';
   position: absolute;
-  inset: 6px;
+  inset: 8px;
   border-radius: 50%;
-  border: 1px solid rgba(197, 160, 89, 0.08);
+  border: 1px solid rgba(197, 160, 89, 0.14);
+  pointer-events: none;
+}
+.game-table::after {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(197, 160, 89, 0.06);
   pointer-events: none;
 }
 
@@ -293,21 +609,20 @@
 }
 
 /* ══════════════════════════════════════════════
-   Hand Trays
+   HAND TRAYS
    ══════════════════════════════════════════════ */
 
 .hand-tray-horizontal {
-  display: flex;
-  align-items: flex-end;
-  gap: 1.5rem;
   padding: 1.5rem 2rem;
-  background: linear-gradient(180deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(197, 160, 89, 0.25);
+  background:
+    linear-gradient(180deg, rgba(255,245,220,0.02) 0%, transparent 20%),
+    linear-gradient(180deg, rgba(14, 8, 24, 0.92) 0%, rgba(10, 6, 18, 0.97) 100%);
+  backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(197, 160, 89, 0.3);
   border-radius: 1.5rem 1.5rem 0 0;
   box-shadow: 
-    0 -8px 40px rgba(0, 0, 0, 0.6),
-    0 -1px 0 rgba(197, 160, 89, 0.1);
+    0 -8px 40px rgba(0, 0, 0, 0.65),
+    0 -1px 0 rgba(197, 160, 89, 0.12);
 }
 
 .hand-card-vertical {
@@ -318,22 +633,24 @@
 }
 
 .hand-tray {
-  background: linear-gradient(180deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(197, 160, 89, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255,245,220,0.02) 0%, transparent 20%),
+    linear-gradient(180deg, rgba(14, 8, 24, 0.92) 0%, rgba(10, 6, 18, 0.97) 100%);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(197, 160, 89, 0.25);
   border-radius: 1.25rem 1.25rem 0 0;
   box-shadow: 
-    0 -4px 30px rgba(0, 0, 0, 0.6),
-    0 -1px 0 rgba(197, 160, 89, 0.1);
+    0 -4px 32px rgba(0, 0, 0, 0.65),
+    0 -1px 0 rgba(197, 160, 89, 0.12);
 }
 
 /* ══════════════════════════════════════════════
-   Card Backs
+   CARD BACKS — ORNATE SIGIL
    ══════════════════════════════════════════════ */
 
 .card-back-moon {
-  background: linear-gradient(135deg, #16103a 0%, #0a0620 100%);
-  border: 1px solid rgba(197, 160, 89, 0.3);
+  background: linear-gradient(135deg, #16103a 0%, #0a0620 50%, #0d0825 100%);
+  border: 1px solid rgba(197, 160, 89, 0.38);
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -344,27 +661,43 @@
   aspect-ratio: 3/4;
 }
 
+/* Inner inset frame */
 .card-back-moon::before {
   content: '';
   position: absolute;
-  inset: 4px;
-  border: 1px solid rgba(197, 160, 89, 0.1);
-  border-radius: 4px;
+  inset: 5px;
+  border: 1px solid rgba(197, 160, 89, 0.18);
+  border-radius: 6px;
+  box-shadow: inset 0 0 20px rgba(197, 160, 89, 0.04);
   pointer-events: none;
 }
 
+/* Sigil — 8-point star via clip-path shapes */
 .card-back-moon::after {
-  content: '☾';
-  font-size: 2rem;
-  color: rgba(212, 175, 90, 0.5);
-  text-shadow: 0 0 20px rgba(212, 175, 90, 0.3);
+  content: '';
+  position: absolute;
+  width: 52%;
+  height: 52%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(197,160,89,0.35) 0%, transparent 55%);
+  /* 8-point star rendered as SVG data-URI */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,2 56,38 90,20 68,48 98,50 68,52 90,80 56,62 50,98 44,62 10,80 32,52 2,50 32,48 10,20 44,38' fill='%23c5a059'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23c5a059'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,2 56,38 90,20 68,48 98,50 68,52 90,80 56,62 50,98 44,62 10,80 32,52 2,50 32,48 10,20 44,38' fill='%23c5a059'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23c5a059'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  background-color: rgba(197, 160, 89, 0.45);
+  animation: sigil-pulse 4s ease-in-out infinite alternate;
 }
 
 .card-back {
   aspect-ratio: 3/4;
   width: 100%;
   background:
-    radial-gradient(ellipse at 50% 50%, rgba(88, 28, 135, 0.2) 0%, transparent 70%),
+    radial-gradient(ellipse at 50% 50%, rgba(88, 28, 135, 0.25) 0%, transparent 70%),
     repeating-conic-gradient(from 0deg at 50% 50%, #14103a 0deg 30deg, #100c2e 30deg 60deg);
   display: flex;
   align-items: center;
@@ -374,19 +707,17 @@
   content: '';
   width: 40%;
   height: 40%;
-  border: 1px solid rgba(197, 160, 89, 0.3);
+  border: 1px solid rgba(197, 160, 89, 0.35);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(197, 160, 89, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(197, 160, 89, 0.12) 0%, transparent 70%);
+  box-shadow: 0 0 20px rgba(197, 160, 89, 0.1);
 }
 
 /* ══════════════════════════════════════════════
-   Floating Panels
+   FLOATING PANELS
    ══════════════════════════════════════════════ */
 
-.float-panel {
-  position: fixed;
-  z-index: 40;
-}
+.float-panel { position: fixed; z-index: 40; }
 
 .float-panel-left {
   bottom: 8rem;
@@ -394,16 +725,13 @@
   width: 20rem;
   max-height: 25rem;
   overflow-y: auto;
-  background: linear-gradient(135deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(197, 160, 89, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255,245,220,0.02) 0%, transparent 20%),
+    linear-gradient(135deg, rgba(14,8,24,0.92) 0%, rgba(10,6,18,0.96) 100%);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(197, 160, 89, 0.25);
   border-radius: 1rem;
 }
-
-.float-panel-left::-webkit-scrollbar { width: 4px; }
-.float-panel-left::-webkit-scrollbar-track { background: transparent; }
-.float-panel-left::-webkit-scrollbar-thumb { background: rgba(197, 160, 89, 0.2); border-radius: 2px; }
-.float-panel-left::-webkit-scrollbar-thumb:hover { background: rgba(197, 160, 89, 0.4); }
 
 .float-panel-right {
   top: 5rem;
@@ -411,19 +739,25 @@
   width: 16rem;
   max-height: 60vh;
   overflow-y: auto;
-  background: linear-gradient(135deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(197, 160, 89, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255,245,220,0.02) 0%, transparent 20%),
+    linear-gradient(135deg, rgba(14,8,24,0.92) 0%, rgba(10,6,18,0.96) 100%);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(197, 160, 89, 0.25);
   border-radius: 1rem;
 }
 
+.float-panel-left::-webkit-scrollbar,
 .float-panel-right::-webkit-scrollbar { width: 4px; }
+.float-panel-left::-webkit-scrollbar-track,
 .float-panel-right::-webkit-scrollbar-track { background: transparent; }
-.float-panel-right::-webkit-scrollbar-thumb { background: rgba(197, 160, 89, 0.2); border-radius: 2px; }
-.float-panel-right::-webkit-scrollbar-thumb:hover { background: rgba(197, 160, 89, 0.4); }
+.float-panel-left::-webkit-scrollbar-thumb,
+.float-panel-right::-webkit-scrollbar-thumb { background: rgba(197,160,89,0.2); border-radius: 2px; }
+.float-panel-left::-webkit-scrollbar-thumb:hover,
+.float-panel-right::-webkit-scrollbar-thumb:hover { background: rgba(197,160,89,0.4); }
 
 /* ══════════════════════════════════════════════
-   Environmental / Atmospheric Elements
+   ENVIRONMENTAL ELEMENTS
    ══════════════════════════════════════════════ */
 
 .environment-bg {
@@ -434,143 +768,165 @@
   overflow: hidden;
 }
 
-/* Soft nebula glow bottom-left */
 .clockwork-tree {
   position: absolute;
   bottom: -5%;
   left: -5%;
   width: 400px;
   height: 400px;
-  opacity: 1;
-  background: radial-gradient(ellipse at center, rgba(120, 60, 180, 0.08) 0%, transparent 60%);
-  filter: blur(40px);
+  background: radial-gradient(ellipse at center, rgba(120, 60, 180, 0.1) 0%, transparent 65%);
+  filter: blur(45px);
+  animation: nebula-drift 30s ease-in-out infinite;
 }
 
-/* Soft nebula glow top-right */
 .floating-castle {
   position: absolute;
   top: -5%;
   right: -5%;
   width: 350px;
   height: 350px;
-  opacity: 1;
-  background: radial-gradient(ellipse at center, rgba(212, 175, 90, 0.04) 0%, transparent 60%);
-  filter: blur(40px);
+  background: radial-gradient(ellipse at center, rgba(212, 175, 90, 0.06) 0%, transparent 65%);
+  filter: blur(45px);
+  animation: nebula-drift 38s ease-in-out infinite reverse;
 }
 
 /* ══════════════════════════════════════════════
-   Game Cards
+   GAME CARDS — ORNATE FRAME SYSTEM
    ══════════════════════════════════════════════ */
 
 .game-card {
-  border: 1px solid rgba(197, 160, 89, 0.3);
+  border: 1px solid rgba(197, 160, 89, 0.42);
   border-radius: 0.75rem;
   overflow: hidden;
-  transition: all 0.25s ease;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
   background: #120a22;
   box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.5),
-    0 0 8px rgba(88, 28, 135, 0.2);
+    0 4px 16px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(197, 160, 89, 0.08),
+    0 0 10px rgba(88, 28, 135, 0.22),
+    inset 0 0 24px rgba(0, 0, 0, 0.4);
   position: relative;
+}
+
+/* Corner bracket ornaments — top-left */
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 13px;
+  height: 13px;
+  border-top: 1px solid rgba(197, 160, 89, 0.55);
+  border-left: 1px solid rgba(197, 160, 89, 0.55);
+  border-radius: 2px 0 0 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Corner bracket ornaments — bottom-right */
+.game-card::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 13px;
+  height: 13px;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.55);
+  border-right: 1px solid rgba(197, 160, 89, 0.55);
+  border-radius: 0 0 2px 0;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .game-card img {
   display: block;
 }
 
-.game-card:hover:not(:disabled) {
-  border-color: rgba(212, 175, 90, 0.6);
-  box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(212, 175, 90, 0.15),
-    0 0 8px rgba(88, 28, 135, 0.3);
-  transform: translateY(-2px);
+.game-card:hover:not([disabled]) {
+  border-color: rgba(212, 175, 90, 0.72);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(197, 160, 89, 0.2),
+    0 0 24px rgba(212, 175, 90, 0.2),
+    0 0 8px rgba(88, 28, 135, 0.3),
+    inset 0 0 24px rgba(0, 0, 0, 0.35);
+  transform: translateY(-4px) scale(1.02);
+  filter: drop-shadow(0 0 10px rgba(197, 160, 89, 0.28));
 }
 
 .game-card.selected {
   border-color: #d4af5a;
   border-width: 2px;
-  box-shadow: 
-    0 0 25px rgba(212, 175, 90, 0.4),
-    0 0 50px rgba(212, 175, 90, 0.15),
-    inset 0 0 15px rgba(212, 175, 90, 0.05);
+  animation: card-select-pulse 1.8s ease-in-out infinite;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
+
+/* Selected card loses corner brackets (replaced by full border glow) */
+.game-card.selected::before,
 .game-card.selected::after {
-  content: '✓';
-  position: absolute;
-  inset: auto;
-  top: 6px;
-  right: 6px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #d4af5a, #c5a059);
-  color: #0a0612;
-  font-size: 14px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  z-index: 100;
-  pointer-events: none;
+  opacity: 0;
 }
-.game-card:disabled {
-  opacity: 0.6;
+
+.game-card:disabled,
+.game-card[disabled] {
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
 /* ══════════════════════════════════════════════
-   Board Area
+   BOARD AREA
    ══════════════════════════════════════════════ */
 
 .board-area {
   background: radial-gradient(ellipse at center, rgba(22, 12, 40, 0.95) 0%, rgba(10, 6, 18, 0.98) 100%);
-  border: 1px solid rgba(197, 160, 89, 0.2);
+  border: 1px solid rgba(197, 160, 89, 0.22);
   border-radius: 1.5rem;
   box-shadow: 
     inset 0 0 60px rgba(88, 28, 135, 0.15),
+    0 0 0 1px rgba(197, 160, 89, 0.08),
     0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 /* ══════════════════════════════════════════════
-   Clue Banner
+   CLUE BANNER
    ══════════════════════════════════════════════ */
 
 .clue-banner {
-  background: linear-gradient(135deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(197, 160, 89, 0.3);
+  background:
+    linear-gradient(180deg, rgba(255,245,220,0.025) 0%, transparent 25%),
+    linear-gradient(135deg, rgba(14, 8, 24, 0.92) 0%, rgba(10, 6, 18, 0.96) 100%);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(197, 160, 89, 0.38);
   border-radius: 1rem;
-  box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.5),
-    0 0 1px rgba(197, 160, 89, 0.4),
-    inset 0 1px 0 rgba(197, 160, 89, 0.06);
+  box-shadow:
+    0 0 0 1px rgba(197, 160, 89, 0.12),
+    0 8px 28px rgba(0, 0, 0, 0.55),
+    0 0 20px rgba(197, 160, 89, 0.08),
+    inset 0 1px 0 rgba(197, 160, 89, 0.08);
   position: relative;
 }
 
-/* Ornamental corner accents on clue banner */
 .clue-banner::before {
   content: '✦';
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(212, 175, 90, 0.3);
-  font-size: 10px;
+  color: rgba(212, 175, 90, 0.65);
+  font-size: 11px;
 }
 .clue-banner::after {
   content: '✦';
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(212, 175, 90, 0.3);
-  font-size: 10px;
+  color: rgba(212, 175, 90, 0.65);
+  font-size: 11px;
 }
 
 /* ══════════════════════════════════════════════
-   Gold Button
+   GOLD BUTTON — ANIMATED SHIMMER
    ══════════════════════════════════════════════ */
 
 .btn-gold {
@@ -578,42 +934,80 @@
   color: #d4af5a;
   font-weight: 700;
   font-family: 'Cinzel', serif;
-  border: 1px solid rgba(212, 175, 90, 0.5);
+  border: 1px solid rgba(212, 175, 90, 0.55);
   border-radius: 0.75rem;
   padding: 0.75rem 2rem;
-  transition: all 0.25s ease;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  text-shadow: 0 0 10px rgba(212, 175, 90, 0.3);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 10px rgba(212, 175, 90, 0.35);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(197, 160, 89, 0.08);
   position: relative;
   overflow: hidden;
 }
 
+/* Animated shimmer sweep */
 .btn-gold::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(212, 175, 90, 0.05) 0%, transparent 50%, rgba(212, 175, 90, 0.05) 100%);
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(212, 175, 90, 0.18) 50%,
+    transparent 65%
+  );
+  background-size: 200% 100%;
+  animation: btn-shimmer 3.5s ease-in-out infinite;
   pointer-events: none;
 }
 
 .btn-gold:hover:not(:disabled) {
-  border-color: rgba(212, 175, 90, 0.8);
-  box-shadow: 
-    0 4px 20px rgba(212, 175, 90, 0.25),
-    0 0 40px rgba(212, 175, 90, 0.1);
-  text-shadow: 0 0 15px rgba(212, 175, 90, 0.5);
-  transform: translateY(-1px);
+  border-color: rgba(212, 175, 90, 0.85);
+  box-shadow:
+    0 4px 22px rgba(212, 175, 90, 0.3),
+    0 0 44px rgba(212, 175, 90, 0.12),
+    0 0 0 1px rgba(197, 160, 89, 0.2);
+  text-shadow: 0 0 18px rgba(212, 175, 90, 0.6);
+  transform: translateY(-2px) scale(1.01);
+}
+.btn-gold:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
 }
 .btn-gold:disabled {
-  opacity: 0.4;
+  opacity: 0.38;
   cursor: not-allowed;
   text-shadow: none;
+  animation: none;
+}
+.btn-gold:disabled::before {
+  animation: none;
 }
 
 /* ══════════════════════════════════════════════
-   Player Entries & Avatars
+   INPUT FIELDS
+   ══════════════════════════════════════════════ */
+
+.input-celestial {
+  background: rgba(22, 12, 40, 0.7);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  border-radius: 0.625rem;
+  color: #e8e0f0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.input-celestial::placeholder {
+  color: rgba(138, 120, 168, 0.7);
+}
+.input-celestial:focus {
+  outline: none;
+  border-color: rgba(197, 160, 89, 0.6);
+  animation: input-focus-glow 2s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════════
+   PLAYER ENTRIES & AVATARS
    ══════════════════════════════════════════════ */
 
 .player-entry {
@@ -626,11 +1020,11 @@
   border: 1px solid transparent;
 }
 .player-entry:hover {
-  background: rgba(197, 160, 89, 0.04);
+  background: rgba(197, 160, 89, 0.05);
 }
 .player-entry.storyteller {
   background: rgba(197, 160, 89, 0.08);
-  border-color: rgba(197, 160, 89, 0.15);
+  border-color: rgba(197, 160, 89, 0.18);
 }
 
 .player-avatar {
@@ -638,26 +1032,70 @@
   height: 2.25rem;
   border-radius: 50%;
   background: linear-gradient(135deg, #2a1850 0%, #3c285a 50%, #4a3068 100%);
-  border: 1px solid rgba(197, 160, 89, 0.35);
+  border: 1px solid rgba(197, 160, 89, 0.38);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 0.75rem;
+  font-family: 'Cinzel', serif;
   color: #e8e0f0;
   flex-shrink: 0;
   box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 2px 8px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.player-avatar.storyteller {
+  animation: storyteller-pulse 2.4s ease-in-out infinite;
 }
 
 /* ══════════════════════════════════════════════
-   Feed Panel
+   FEED PANEL
    ══════════════════════════════════════════════ */
 
 .feed-panel {
-  background: linear-gradient(135deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(197, 160, 89, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255,245,220,0.02) 0%, transparent 20%),
+    linear-gradient(135deg, rgba(14, 8, 24, 0.9) 0%, rgba(10, 6, 18, 0.95) 100%);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(197, 160, 89, 0.22);
   border-radius: 1rem;
+}
+
+/* ══════════════════════════════════════════════
+   SCORE DELTA ANIMATION
+   ══════════════════════════════════════════════ */
+
+.score-delta {
+  animation: score-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ══════════════════════════════════════════════
+   TITLE GOLD CLASS
+   ══════════════════════════════════════════════ */
+
+.title-gold {
+  color: #d4af5a;
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  animation: gold-breathe 3.5s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════════
+   LOADING ORB
+   ══════════════════════════════════════════════ */
+
+.loading-orb {
+  animation: orb-pulse 2.2s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════════
+   MOBILE SAFE AREAS
+   ══════════════════════════════════════════════ */
+
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+.safe-top {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
 }

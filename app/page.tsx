@@ -72,48 +72,63 @@ export default function HomePage() {
   }
 
   return (
-    <main className="game-bg flex min-h-screen items-center justify-center px-6 py-10">
-      <div className="flex w-full max-w-md flex-col items-center gap-10">
+    <main className="game-bg flex min-h-screen items-center justify-center px-5 py-10">
+      {/* Starfield layer 3 */}
+      <div className="stars-layer" />
+      {/* Nebula blobs */}
+      <div className="nebula-left" />
+      <div className="nebula-right" />
+
+      <motion.div
+        className="flex w-full max-w-md flex-col items-center gap-8 relative z-10"
+        variants={stagger}
+        initial="hidden"
+        animate="show"
+      >
         {/* Title */}
-        <div className="space-y-4 text-center">
-          <h1 className="text-5xl font-bold tracking-[0.15em] text-[#c5a059] font-serif" style={{ fontVariant: 'small-caps' }}>
+        <motion.div variants={fadeUp} transition={{ duration: 0.6, ease: 'easeOut' }} className="space-y-3 text-center">
+          <h1
+            className="title-gold text-5xl font-black tracking-[0.18em]"
+            style={{ fontVariant: 'small-caps' }}
+          >
             Deep-Xit
           </h1>
-          <p className="text-sm text-[#e2e8f0]">
-            A creative storytelling game with AI-generated art
+          <p className="text-sm italic text-[#c8bedd]/80 font-serif tracking-wide">
+            A celestial storytelling game with AI-conjured visions
           </p>
-        </div>
+        </motion.div>
 
-        {/* Create */}
-        <div className="glass-panel w-full p-6 text-center">
-          <h2 className="mb-1 text-lg font-semibold text-foreground">Create a new game</h2>
-          <p className="mb-5 text-sm text-muted-foreground">Start a room and share the code with friends.</p>
+        {/* Create panel */}
+        <motion.div variants={fadeUp} transition={{ duration: 0.5, ease: 'easeOut' }} className="glass-panel w-full p-6 text-center">
+          <h2 className="mb-1 font-['Cinzel'] text-base font-semibold uppercase tracking-[0.1em] text-[#d4af5a]">
+            Create a New Game
+          </h2>
+          <p className="mb-5 text-sm italic text-muted-foreground">Begin a room and share the code with your companions.</p>
+
           <input
             value={theme}
             onChange={(event) => setTheme(event.target.value)}
-            placeholder="Game theme (e.g., 'dreams', 'underwater world')"
+            placeholder="Game theme — e.g. 'dreams', 'forgotten kingdoms'"
             maxLength={100}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                createRoom()
-              }
-            }}
-            className="mb-3 w-full rounded-lg border border-border bg-purple-deep/60 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/50"
+            onKeyDown={(event) => { if (event.key === 'Enter') createRoom() }}
+            className="input-celestial mb-3 w-full px-4 py-3 text-sm"
           />
+
           <div className="mb-3 flex items-center justify-center gap-3">
             <input
               type="checkbox"
               id="useAI"
               checked={useAI}
               onChange={(e) => setUseAI(e.target.checked)}
-              className="h-4 w-4 rounded border-gold bg-purple-deep/60 text-gold focus:ring-gold/50"
+              className="h-4 w-4 rounded border-[rgba(197,160,89,0.5)] bg-purple-deep/60 accent-[#c5a059]"
             />
-            <label htmlFor="useAI" className="text-sm text-foreground">
-              Use AI-generated images (Together AI)
+            <label htmlFor="useAI" className="text-sm text-foreground/90">
+              Use AI-generated images
             </label>
           </div>
-          <div className="mb-3 flex items-center justify-center gap-2">
-            <label htmlFor="maxRounds" className="text-sm text-foreground">
+
+          <div className="mb-5 flex items-center justify-center gap-3">
+            <label htmlFor="maxRounds" className="text-sm text-foreground/90">
               Max rounds:
             </label>
             <input
@@ -123,48 +138,64 @@ export default function HomePage() {
               max="50"
               value={maxRounds}
               onChange={(e) => setMaxRounds(Math.max(1, Math.min(50, parseInt(e.target.value) || 10)))}
-              className="w-20 rounded-lg border border-border bg-purple-deep/60 px-3 py-2 text-sm text-foreground text-center focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/50"
+              className="input-celestial w-20 px-3 py-2 text-center text-sm"
             />
           </div>
-          <button className="btn-gold w-full" onClick={createRoom} disabled={isCreating}>
-            {isCreating ? 'Creating...' : 'Create Room'}
-          </button>
-        </div>
 
-        {/* Divider */}
-        <div className="flex w-full items-center gap-4">
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-xs tracking-widest text-muted-foreground">OR</span>
-          <div className="h-px flex-1 bg-border" />
-        </div>
+          <motion.button
+            className="btn-gold w-full"
+            onClick={createRoom}
+            disabled={isCreating}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            {isCreating ? 'Conjuring…' : 'Create Room'}
+          </motion.button>
+        </motion.div>
 
-        {/* Join */}
-        <div className="glass-panel w-full p-6 text-center">
-          <h2 className="mb-1 text-lg font-semibold text-foreground">Join an existing game</h2>
-          <p className="mb-5 text-sm text-muted-foreground">Paste the room ID shared by the host.</p>
+        {/* Ornate OR divider */}
+        <motion.div variants={fadeUp} transition={{ duration: 0.4 }} className="flex w-full items-center gap-3">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#c5a059]/55 to-transparent" />
+          <span className="font-['Cinzel'] text-[11px] tracking-[0.45em] text-[#c5a059]/60">✦ OR ✦</span>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#c5a059]/55 to-transparent" />
+        </motion.div>
+
+        {/* Join panel */}
+        <motion.div variants={fadeUp} transition={{ duration: 0.5, ease: 'easeOut' }} className="glass-panel w-full p-6 text-center">
+          <h2 className="mb-1 font-['Cinzel'] text-base font-semibold uppercase tracking-[0.1em] text-[#d4af5a]">
+            Join a Game
+          </h2>
+          <p className="mb-5 text-sm italic text-muted-foreground">Enter the room ID shared by your host.</p>
+
           <input
             value={joinCode}
             onChange={(event) => setJoinCode(event.target.value)}
             placeholder="Room ID"
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                joinRoom()
-              }
-            }}
-            className="mb-3 w-full rounded-lg border border-border bg-purple-deep/60 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/50"
+            onKeyDown={(event) => { if (event.key === 'Enter') joinRoom() }}
+            className="input-celestial mb-4 w-full px-4 py-3 text-sm"
           />
-          <button
-            className="btn-gold w-full opacity-80 hover:opacity-100"
+
+          <motion.button
+            className="btn-gold w-full"
             onClick={joinRoom}
             disabled={!joinCode.trim()}
-            style={{ background: 'rgba(60, 40, 90, 0.6)', color: '#d4c8e8', border: '1px solid rgba(140, 100, 200, 0.3)' }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
           >
-            Join Room
-          </button>
-        </div>
+            Enter the Realm
+          </motion.button>
+        </motion.div>
 
-        {error && <p className="text-center text-sm text-destructive">{error}</p>}
-      </div>
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center text-sm text-destructive font-serif italic"
+          >
+            {error}
+          </motion.p>
+        )}
+      </motion.div>
     </main>
   )
 }

@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useGameState, type GameState } from '@/hooks/useGameState'
 import type { Card as GameCard, ScoreDelta, Vote, Card, Player } from '@/lib/game/types'
 import { getPlayerIdForRoom, getSessionId, setPlayerIdForRoom } from '@/lib/session'
@@ -929,26 +930,66 @@ export default function RoomPage() {
 
   return (
     <main className={`h-screen bg-[#0a0612] flex flex-col ${gameState.status === 'SCORING' ? 'overflow-y-auto' : 'overflow-hidden'}`}>
-      {/* Gothic loading overlay */}
-      {showLoadingAnimation && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0612]/95 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-6">
-            {/* Outer ring */}
-            <div className="relative w-24 h-24">
-              <div className="absolute inset-0 rounded-full border-2 border-gold/10" />
-              <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-gold animate-spin" style={{ animationDuration: '2s' }} />
-              <div className="absolute inset-3 rounded-full border-2 border-transparent border-b-gold/60 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
-              <div className="absolute inset-6 rounded-full border border-transparent border-t-gold/40 animate-spin" style={{ animationDuration: '3s' }} />
-              {/* Center glow */}
-              <div className="absolute inset-8 rounded-full bg-gold/10 animate-pulse" />
+      {/* Celestial loading overlay */}
+      <AnimatePresence>
+        {showLoadingAnimation && (
+          <motion.div
+            key="loading-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0612]/96 backdrop-blur-md"
+          >
+            <div className="flex flex-col items-center gap-7">
+              {/* Gold Moon orb */}
+              <div className="relative w-28 h-28">
+                {/* Outer atmospheric glow */}
+                <motion.div
+                  className="absolute inset-0 rounded-full"
+                  style={{ background: 'radial-gradient(circle, rgba(197,160,89,0.18) 0%, transparent 70%)' }}
+                  animate={{ scale: [0.85, 1.25, 0.85], opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+                />
+                {/* Ring 1 — slow outer */}
+                <div className="absolute inset-0 rounded-full border border-[rgba(197,160,89,0.18)] animate-spin" style={{ animationDuration: '8s' }} />
+                {/* Ring 2 — medium */}
+                <div className="absolute inset-2 rounded-full border border-[rgba(197,160,89,0.35)] animate-spin" style={{ animationDuration: '3s' }} />
+                {/* Ring 3 — fast reverse */}
+                <div className="absolute inset-4 rounded-full border border-transparent border-t-[rgba(212,175,90,0.7)] animate-spin" style={{ animationDuration: '1.6s', animationDirection: 'reverse' }} />
+                {/* Inner ring */}
+                <div className="absolute inset-6 rounded-full border border-transparent border-b-[rgba(197,160,89,0.5)] animate-spin" style={{ animationDuration: '2.4s' }} />
+                {/* Moon center */}
+                <motion.div
+                  className="loading-orb absolute inset-8 rounded-full flex items-center justify-center"
+                  style={{ background: 'radial-gradient(circle, rgba(212,175,90,0.55) 0%, rgba(197,160,89,0.2) 60%, transparent 100%)' }}
+                >
+                  <span className="text-[#d4af5a] text-lg leading-none select-none" style={{ textShadow: '0 0 12px rgba(212,175,90,0.8)' }}>☽</span>
+                </motion.div>
+              </div>
+
+              {/* Text block */}
+              <div className="flex flex-col items-center gap-2 text-center">
+                <p className="font-['Cinzel'] text-base font-semibold uppercase tracking-[0.2em] text-[#d4af5a]" style={{ textShadow: '0 0 16px rgba(197,160,89,0.5)' }}>
+                  Conjuring Visions
+                </p>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={loadingMessage}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-[11px] italic text-[#c5a059]/55 max-w-[220px]"
+                  >
+                    {loadingMessage}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
             </div>
-            <div className="flex flex-col items-center gap-2">
-              <p className="text-lg font-serif text-gold tracking-wider" style={{ fontVariant: 'small-caps' }}>Conjuring Visions</p>
-              <p className="text-xs text-gold/50 italic">{loadingMessage}</p>
-            </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Environmental elements */}
       <div className="environment-bg">

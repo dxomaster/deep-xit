@@ -325,11 +325,12 @@ Keep all content strictly G-rated and family-safe.`
     })
 
     // Generate images in parallel with optimized concurrency
-    // Together AI rate limit: 50 RPM on free tier = ~1 request per 1.2s
-    // With 4 concurrent requests and 800ms delay = ~5 requests per 4s = 75 RPM (safe buffer)
+    // Together AI rate limit: 50 RPM = 1 request per 1.2s
+    // Math: 3 concurrent * 1.2s = 3.6s minimum delay between batches
+    // With 3.6s delay: 50 requests / 3 per batch = ~16 batches/min = 48 images/min
     const images: GeneratedImage[] = []
-    const concurrencyLimit = 4 // Increased from 2
-    const delayBetweenBatches = 800 // Reduced from 1500ms
+    const concurrencyLimit = 3 // Balanced: good parallelism without hitting limits
+    const delayBetweenBatches = 3600 // 3.6s to respect 50 RPM limit
     
     for (let i = 0; i < prompts.length; i += concurrencyLimit) {
       const batch = prompts.slice(i, i + concurrencyLimit)

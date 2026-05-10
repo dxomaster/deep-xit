@@ -1038,7 +1038,7 @@ export default function RoomPage() {
 
       {/* ── Main game area (flexbox skeleton: header, main stage, action tray) ── */}
       <div className={`flex flex-col flex-1 max-w-4xl mx-auto w-full px-4 lg:px-6 relative ${gameState.status === 'SCORING' ? 'overflow-y-auto' : ''}`}>
-        {/* Clue banner - notch-safe fixed position */}
+        {/* Clue banner - notch-safe fixed position with animation */}
         <AnimatePresence>
           {gameState.currentClue && gameState.status !== 'FINISHED' && (
             <motion.div

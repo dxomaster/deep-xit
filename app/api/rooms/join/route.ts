@@ -13,7 +13,7 @@ const requestSchema = z.object({
 })
 
 export async function POST(request: Request) {
-  const rateLimited = applyRateLimit(request, 'rooms-join', 10, 60000)
+  const rateLimited = await applyRateLimit(request, 'rooms-join', 10, 60000)
   if (rateLimited) return rateLimited
 
   const body = await request.json()

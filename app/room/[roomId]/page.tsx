@@ -6,6 +6,7 @@ import { useGameState, type GameState } from '@/hooks/useGameState'
 import type { Card as GameCard, ScoreDelta, Vote, Card, Player } from '@/lib/game/types'
 import { getPlayerIdForRoom, getSessionId, setPlayerIdForRoom } from '@/lib/session'
 import { getCynicalRoundMessage, getWinnerSarcasticMessage } from '@/lib/game/round-messages'
+import { sanitizeDisplayText } from '@/lib/sanitize'
 
 export default function RoomPage() {
   const params = useParams<{ roomId: string }>()
@@ -27,7 +28,6 @@ export default function RoomPage() {
   const [isGeneratingImages, setIsGeneratingImages] = useState(false)
   const [lastSarcasticMessage, setLastSarcasticMessage] = useState<string>('')
   const [hasGeneratedSarcasticMessage, setHasGeneratedSarcasticMessage] = useState(false)
-  const [loadingMessage, setLoadingMessage] = useState<string>('')
   const scoringRoundRef = useRef<number | null>(null)
 
   const loadingMessages = [
@@ -539,43 +539,72 @@ export default function RoomPage() {
 
   const { gameState, isLoading, error } = useGameState(roomId, playerId)
 
+  // Derived values using useMemo (must be defined before useEffects that depend on them)
+  const currentPlayer = useMemo(() => gameState.players.find((p) => p.id === playerId), [gameState.players, playerId])
+  const playerHand = useMemo(() => gameState.cards.filter((card) => card.playerId === playerId), [gameState.cards, playerId])
+  const submittedRoundCards = useMemo(() => gameState.cards.filter((card) => card.isSubmittedForRound), [gameState.cards])
+  const visibleVotingCards = useMemo(() => submittedRoundCards.filter((card) => card.playerId !== playerId), [submittedRoundCards, playerId])
+  const currentPlayerVote = useMemo(() => gameState.votes.find((vote) => vote.voterId === playerId), [gameState.votes, playerId])
+
+  // Core player state derived values
+  const hasSubmittedBluff = playerHand.some((card) => !card.isStorytellerCard && card.isSubmittedForRound)
+  const isStoryteller = Boolean(playerId && gameState.storytellerId === playerId)
+  const storytellerPlayer = gameState.players.find((p) => p.id === gameState.storytellerId)
+  const storytellerName = useMemo(() => storytellerPlayer?.displayName ?? 'Storyteller', [storytellerPlayer?.displayName])
+
+  // Show loading animation if game state indicates images are being generated
+  const showLoadingAnimation = gameState.isGeneratingImages
+
+  // Pick a random loading message when generating images - using useMemo to avoid unnecessary re-renders
+  const loadingMessage = useMemo(() => {
+    if (gameState.isGeneratingImages) {
+      return loadingMessages[Math.floor(Math.random() * loadingMessages.length)]
+    }
+    return ''
+  }, [gameState.isGeneratingImages])
+
   useEffect(() => {
     const stored = getPlayerIdForRoom(roomId)
     if (stored) setPlayerId(stored)
   }, [roomId])
 
+  // Consolidated status change handler
   useEffect(() => {
-    if (gameState.status) {
-      const labels: Record<string, string> = {
-        LOBBY: 'Waiting for players...',
-        STORYTELLING: `${storytellerName} is choosing a card...`,
-        BLUFFING: 'Players are bluffing!',
-        VOTING: 'Voting has started!',
-        SCORING: 'Round complete!',
-      }
-      const msg = labels[gameState.status]
-      if (msg) {
-        setFeedMessages((prev) => {
-          if (prev[prev.length - 1] === msg) return prev
-          return [...prev.slice(-4), msg]
-        })
-      }
-
-      if (gameState.status === 'LOBBY') {
-        // Clear sarcastic message when entering lobby (new game)
-        setLastSarcasticMessage('')
-        setHasGeneratedSarcasticMessage(false)
-        scoringRoundRef.current = null
-      }
-
-      if (gameState.status !== 'SCORING') {
-        setScoreDeltas([])
-        setHasGeneratedSarcasticMessage(false)
-        setLastSarcasticMessage('')
-      }
+    if (!gameState.status) return
+    
+    const labels: Record<string, string> = {
+      LOBBY: 'Waiting for players...',
+      STORYTELLING: `${storytellerName} is choosing a card...`,
+      BLUFFING: 'Players are bluffing!',
+      VOTING: 'Voting has started!',
+      SCORING: 'Round complete!',
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState.status])
+    
+    const msg = labels[gameState.status]
+    if (msg) {
+      setFeedMessages((prev) => {
+        if (prev[prev.length - 1] === msg) return prev
+        return [...prev.slice(-4), msg]
+      })
+    }
+
+    // Reset states based on game phase
+    if (gameState.status === 'LOBBY') {
+      setLastSarcasticMessage('')
+      setHasGeneratedSarcasticMessage(false)
+      scoringRoundRef.current = null
+    } else if (gameState.status !== 'SCORING') {
+      setScoreDeltas([])
+      setHasGeneratedSarcasticMessage(false)
+      setLastSarcasticMessage('')
+    }
+    
+    // Clear loading/submitting states when transitioning to active phases
+    if (gameState.status === 'STORYTELLING' || gameState.status === 'BLUFFING') {
+      setIsGeneratingImages(false)
+      setIsSubmitting(false)
+    }
+  }, [gameState.status, storytellerName])
 
   useEffect(() => {
     if (gameState.status === 'SCORING') {
@@ -617,39 +646,9 @@ export default function RoomPage() {
     }
   }, [gameState.status, gameState.currentRound, gameState.maxRounds])
 
-  // Clear generating state when game transitions to an active phase
-  useEffect(() => {
-    if (gameState.status === 'STORYTELLING' || gameState.status === 'BLUFFING') {
-      setIsGeneratingImages(false)
-      setIsSubmitting(false)
-    }
-  }, [gameState.status])
-
-  // Pick a random loading message when generating images
-  useEffect(() => {
-    if (gameState.isGeneratingImages) {
-      const randomMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)]
-      setLoadingMessage(randomMessage)
-    }
-  }, [gameState.isGeneratingImages])
-
-  const currentPlayer = useMemo(() => gameState.players.find((p) => p.id === playerId), [gameState.players, playerId])
-  const playerHand = useMemo(() => gameState.cards.filter((card) => card.playerId === playerId), [gameState.cards, playerId])
-  const submittedRoundCards = useMemo(() => gameState.cards.filter((card) => card.isSubmittedForRound), [gameState.cards])
-  const visibleVotingCards = useMemo(() => submittedRoundCards.filter((card) => card.playerId !== playerId), [submittedRoundCards, playerId])
-  const currentPlayerVote = useMemo(() => gameState.votes.find((vote) => vote.voterId === playerId), [gameState.votes, playerId])
-
-  // Show loading animation if game state indicates images are being generated
-  const showLoadingAnimation = gameState.isGeneratingImages
-
-  const hasSubmittedBluff = playerHand.some((card) => !card.isStorytellerCard && card.isSubmittedForRound)
-  const isStoryteller = Boolean(playerId && gameState.storytellerId === playerId)
-  const storytellerPlayer = gameState.players.find((p) => p.id === gameState.storytellerId)
-  const storytellerName = storytellerPlayer?.displayName ?? 'Storyteller'
-
   async function joinRoom(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const name = displayName.trim()
+    const name = sanitizeDisplayText(displayName, 30)
     if (!name) return
 
     console.log('Joining room with roomId:', roomId)
@@ -698,10 +697,11 @@ export default function RoomPage() {
     event.preventDefault()
     if (!playerId || !selectedCardId) return
     setSubmitError(null)
+    const sanitizedClue = sanitizeDisplayText(clue, 200)
     const response = await fetch('/api/storytelling/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ roomId, storytellerId: playerId, cardId: selectedCardId, clue, sessionId: getSessionId() }),
+      body: JSON.stringify({ roomId, storytellerId: playerId, cardId: selectedCardId, clue: sanitizedClue, sessionId: getSessionId() }),
     })
     if (!response.ok) {
       const body = (await response.json()) as { error?: string }
@@ -995,7 +995,7 @@ export default function RoomPage() {
         {gameState.currentClue && gameState.status !== 'FINISHED' && (
           <div className="fixed top-20 left-1/2 -translate-x-1/2 z-30 w-full max-w-xl">
             <div className="clue-banner px-6 py-3 text-center">
-              <p className="text-lg font-medium italic text-foreground">&ldquo;{gameState.currentClue}&rdquo;</p>
+              <p className="text-lg font-medium italic text-foreground">&ldquo;{sanitizeDisplayText(gameState.currentClue, 500)}&rdquo;</p>
             </div>
           </div>
         )}

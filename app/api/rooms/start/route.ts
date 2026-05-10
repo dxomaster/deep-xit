@@ -12,7 +12,7 @@ const requestSchema = z.object({
 })
 
 export async function POST(request: Request) {
-  const rateLimited = applyRateLimit(request, 'rooms-start', 5, 60000)
+  const rateLimited = await applyRateLimit(request, 'rooms-start', 5, 60000)
   if (rateLimited) return rateLimited
 
   const parsed = requestSchema.safeParse(await request.json())

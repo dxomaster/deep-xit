@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { checkRateLimit, getClientIdentifier, rateLimitKey } from '@/lib/rate-limit'
+import { checkRateLimit, applyServerlessRateLimit } from '@/lib/rate-limit-serverless'
 
 /**
  * Apply rate limiting to a request. Returns a 429 response if rate limited, or null if allowed.
@@ -8,14 +8,23 @@ import { checkRateLimit, getClientIdentifier, rateLimitKey } from '@/lib/rate-li
  * @param maxRequests - Max requests per window (default: 15)
  * @param windowMs - Time window in ms (default: 60000 = 1 minute)
  */
-export function applyRateLimit(
+export async function applyRateLimit(
   request: Request,
   endpoint: string,
   maxRequests = 15,
   windowMs = 60000,
-): NextResponse | null {
+): Promise<NextResponse | null> {
+  // Try serverless-compatible rate limiting first
+  const serverlessResult = await applyServerlessRateLimit(request, endpoint, {
+    maxRequests,
+    windowMs,
+  })
+  
+  if (serverlessResult) return serverlessResult
+
+  // Fallback to in-memory rate limiting for non-burst protection
   const clientId = getClientIdentifier(request)
-  const key = rateLimitKey(clientId, endpoint)
+  const key = `${endpoint}:${clientId}`
   const { allowed, resetTime } = checkRateLimit(key, maxRequests, windowMs)
 
   if (!allowed) {
@@ -30,6 +39,19 @@ export function applyRateLimit(
   }
 
   return null
+}
+
+/**
+ * Extract a client identifier from a request for rate limiting.
+ */
+function getClientIdentifier(request: Request): string {
+  const forwarded = request.headers.get('x-forwarded-for')
+  if (forwarded) return forwarded.split(',')[0].trim()
+
+  const realIp = request.headers.get('x-real-ip')
+  if (realIp) return realIp
+
+  return 'unknown-client'
 }
 
 /**

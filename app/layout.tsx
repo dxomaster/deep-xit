@@ -9,7 +9,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Deep-Xit',
-  description: 'A multiplayer storytelling game powered by AI-generated art',
+  description: 'A multiplayer Deep-Xit clone powered by AI-generated art',
   icons: {
     icon: [
       {
@@ -36,11 +36,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        <div className="stars-layer" />
-        <div className="nebula-left" />
-        <div className="nebula-right" />
-        <div className="nebula-mid" />
+      <body className="font-sans antialiased">
         {children}
         <Analytics />
         <SpeedInsights />

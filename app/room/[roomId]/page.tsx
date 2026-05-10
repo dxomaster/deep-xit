@@ -2,7 +2,6 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useGameState, type GameState } from '@/hooks/useGameState'
 import type { Card as GameCard, ScoreDelta, Vote, Card, Player } from '@/lib/game/types'
 import { getPlayerIdForRoom, getSessionId, setPlayerIdForRoom } from '@/lib/session'
@@ -915,11 +914,9 @@ export default function RoomPage() {
     }
   }
 
-  const handCards = useMemo(() =>
-    gameState.status === 'BLUFFING' && !isStoryteller
-      ? playerHand.filter((c) => !c.isStorytellerCard)
-      : playerHand
-  , [gameState.status, isStoryteller, playerHand])
+  const handCards = gameState.status === 'BLUFFING' && !isStoryteller
+    ? playerHand.filter((c) => !c.isStorytellerCard)
+    : playerHand
 
   const statusText =
     gameState.status === 'STORYTELLING' ? (isStoryteller ? 'Pick a card and give a clue' : `Waiting for ${storytellerName}...`) :
@@ -931,68 +928,27 @@ export default function RoomPage() {
   const winner = gameState.status === 'FINISHED' ? gameState.players.reduce((prev, current) => (prev.score > current.score ? prev : current)) : null
 
   return (
-    <main className={`game-bg relative h-screen ${gameState.status === 'SCORING' ? 'overflow-y-auto' : 'overflow-hidden'}`}>
-      <div className={`flex h-full flex-col ${gameState.status === 'SCORING' ? 'min-h-screen' : ''}`}>
-      {/* Celestial loading overlay */}
-      <AnimatePresence>
-        {showLoadingAnimation && (
-          <motion.div
-            key="loading-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0612]/96 backdrop-blur-md"
-          >
-            <div className="flex flex-col items-center gap-7">
-              {/* Gold Moon orb */}
-              <div className="relative w-28 h-28">
-                {/* Outer atmospheric glow */}
-                <motion.div
-                  className="absolute inset-0 rounded-full"
-                  style={{ background: 'radial-gradient(circle, rgba(197,160,89,0.18) 0%, transparent 70%)' }}
-                  animate={{ scale: [0.85, 1.25, 0.85], opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-                />
-                {/* Ring 1 — slow outer */}
-                <div className="absolute inset-0 rounded-full border border-[rgba(197,160,89,0.18)] animate-spin" style={{ animationDuration: '8s' }} />
-                {/* Ring 2 — medium */}
-                <div className="absolute inset-2 rounded-full border border-[rgba(197,160,89,0.35)] animate-spin" style={{ animationDuration: '3s' }} />
-                {/* Ring 3 — fast reverse */}
-                <div className="absolute inset-4 rounded-full border border-transparent border-t-[rgba(212,175,90,0.7)] animate-spin" style={{ animationDuration: '1.6s', animationDirection: 'reverse' }} />
-                {/* Inner ring */}
-                <div className="absolute inset-6 rounded-full border border-transparent border-b-[rgba(197,160,89,0.5)] animate-spin" style={{ animationDuration: '2.4s' }} />
-                {/* Moon center */}
-                <motion.div
-                  className="loading-orb absolute inset-8 rounded-full flex items-center justify-center"
-                  style={{ background: 'radial-gradient(circle, rgba(212,175,90,0.55) 0%, rgba(197,160,89,0.2) 60%, transparent 100%)' }}
-                >
-                  <span className="text-[#d4af5a] text-lg leading-none select-none" style={{ textShadow: '0 0 12px rgba(212,175,90,0.8)' }}>☽</span>
-                </motion.div>
-              </div>
-
-              {/* Text block */}
-              <div className="flex flex-col items-center gap-2 text-center">
-                <p className="font-['Cinzel'] text-base font-semibold uppercase tracking-[0.2em] text-[#d4af5a]" style={{ textShadow: '0 0 16px rgba(197,160,89,0.5)' }}>
-                  Conjuring Visions
-                </p>
-                <AnimatePresence mode="wait">
-                  <motion.p
-                    key={loadingMessage}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.5 }}
-                    className="text-[11px] italic text-[#c5a059]/55 max-w-[220px]"
-                  >
-                    {loadingMessage}
-                  </motion.p>
-                </AnimatePresence>
-              </div>
+    <main className={`h-screen bg-[#0a0612] flex flex-col ${gameState.status === 'SCORING' ? 'overflow-y-auto' : 'overflow-hidden'}`}>
+      {/* Gothic loading overlay */}
+      {showLoadingAnimation && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0612]/95 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-6">
+            {/* Outer ring */}
+            <div className="relative w-24 h-24">
+              <div className="absolute inset-0 rounded-full border-2 border-gold/10" />
+              <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-gold animate-spin" style={{ animationDuration: '2s' }} />
+              <div className="absolute inset-3 rounded-full border-2 border-transparent border-b-gold/60 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+              <div className="absolute inset-6 rounded-full border border-transparent border-t-gold/40 animate-spin" style={{ animationDuration: '3s' }} />
+              {/* Center glow */}
+              <div className="absolute inset-8 rounded-full bg-gold/10 animate-pulse" />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-lg font-serif text-gold tracking-wider" style={{ fontVariant: 'small-caps' }}>Conjuring Visions</p>
+              <p className="text-xs text-gold/50 italic">{loadingMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Environmental elements */}
       <div className="environment-bg">
@@ -1000,72 +956,62 @@ export default function RoomPage() {
         <div className="floating-castle" />
       </div>
 
-      {/* ── Sticky header ── */}
-      <div className="game-header h-14 safe-top">
-        <div className="flex h-14 items-center justify-between px-4">
+      {/* ── Sticky header (h-16) ── */}
+      <div className="sticky top-0 z-50 h-16 border-b border-gold/20 bg-[#0a0612]/90 backdrop-blur-xl">
+        <div className="flex h-full items-center justify-between px-4">
           <div className="flex items-center gap-3">
-            <motion.button
+            <button
               onClick={() => router.push('/')}
               className="text-[#c5a059] hover:text-[#e0c872] transition-colors"
-              whileTap={{ scale: 0.9 }}
-              style={{ filter: 'drop-shadow(0 0 4px rgba(197,160,89,0.35))' }}
+              style={{ filter: 'drop-shadow(0 2px 4px rgba(197, 160, 89, 0.3))' }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m15 18-6-6 6-6"/>
               </svg>
-            </motion.button>
-            <h1
-              className="title-gold text-lg font-black tracking-[0.15em]"
-              style={{ fontVariant: 'small-caps', fontSize: '1.1rem' }}
-            >
+            </button>
+            <h1 className="text-xl font-bold tracking-[0.15em] text-[#c5a059] font-serif" style={{ fontVariant: 'small-caps' }}>
               Deep-Xit
             </h1>
           </div>
-
           {gameState.status && gameState.status !== 'FINISHED' && (
-            <span className="font-['Cinzel'] text-xs font-semibold uppercase tracking-[0.12em] text-[#c5a059]/80">
-              Round {gameState.currentRound} / {gameState.maxRounds}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-[#c5a059] font-serif">Round {gameState.currentRound} / {gameState.maxRounds}</span>
+            </div>
           )}
-
-          <motion.button
-            onClick={copyRoomId}
-            className="rounded-md border border-[rgba(197,160,89,0.3)] px-3 py-1.5 font-['Cinzel'] text-[10px] uppercase tracking-[0.1em] text-[#c5a059]/70 hover:border-[rgba(197,160,89,0.6)] hover:text-[#d4af5a] transition-colors"
-            whileTap={{ scale: 0.95 }}
-          >
-            {copied ? '✦ Copied' : 'Copy ID'}
-          </motion.button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={copyRoomId}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Copy Room ID
+            </button>
+          </div>
         </div>
       </div>
 
       {/* ── Main game area (flexbox skeleton: header, main stage, action tray) ── */}
       <div className={`flex flex-col flex-1 max-w-4xl mx-auto w-full px-4 lg:px-6 relative ${gameState.status === 'SCORING' ? 'overflow-y-auto' : ''}`}>
-        {/* Clue banner */}
+        {/* Clue banner - fixed at top, separate from circle */}
         {gameState.currentClue && gameState.status !== 'FINISHED' && (
-          <div
-            className="fixed left-1/2 -translate-x-1/2 z-30 w-full max-w-xl px-4"
-            style={{ top: 'calc(env(safe-area-inset-top, 0px) + 4.5rem)' }}
-          >
-            <div className="clue-banner px-8 py-3 text-center">
-              <p className="font-serif text-lg font-medium italic text-foreground tracking-wide">
-                &ldquo;{sanitizeDisplayText(gameState.currentClue, 500)}&rdquo;
-              </p>
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-30 w-full max-w-xl">
+            <div className="clue-banner px-6 py-3 text-center">
+              <p className="text-lg font-medium italic text-foreground">&ldquo;{sanitizeDisplayText(gameState.currentClue, 500)}&rdquo;</p>
             </div>
           </div>
         )}
 
         {/* Main Stage (expanding) */}
         <div className={`flex flex-1 flex-col gap-3 relative ${gameState.status === 'SCORING' ? 'pt-16' : 'pt-24'}`}>
-          {/* Storytelling clue input */}
+          {/* Storytelling clue input - positioned above cards */}
           {gameState.status === 'STORYTELLING' && isStoryteller && (
             <div className="z-10">
               <form onSubmit={handleMainAction} className="flex gap-2">
                 <input
                   value={clue}
                   onChange={(e) => setClue(e.target.value)}
-                  placeholder="Whisper your clue to the cosmos…"
+                  placeholder="Type your clue..."
                   maxLength={140}
-                  className="input-celestial flex-1 px-4 py-2.5 text-sm font-serif italic"
+                  className="flex-1 rounded-lg border border-border bg-purple-deep/60 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/50"
                 />
               </form>
             </div>
@@ -1118,23 +1064,24 @@ export default function RoomPage() {
             </div>
           )}
 
-          {/* Selected card preview — fixed overlay, outside board DOM so it never causes board re-layout */}
-          {selectedCardId && (gameState.status === 'STORYTELLING' || gameState.status === 'BLUFFING') && (() => {
-            const selectedCard = handCards.find((card) => card.id === selectedCardId)
-            return selectedCard ? (
-              <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
-                <div className="relative w-32 h-44 sm:w-40 sm:h-56 rounded-xl overflow-hidden border-2 border-gold/50 shadow-[0_0_24px_rgba(201,168,76,0.5)]">
-                  <img src={selectedCard.imageUrl} alt="Selected card" className="w-full h-full object-cover" />
-                </div>
-              </div>
-            ) : null
-          })()}
-
           {/* Board area with submitted cards - circular table (non-scoring phases) */}
           {gameState.status !== 'FINISHED' && gameState.status !== 'SCORING' && (
           <div className="flex items-center justify-center p-6 relative mx-auto flex-1 flex-shrink min-h-[200px] max-h-[40vh] aspect-square">
             <div className="game-table relative w-full max-w-2xl z-10 aspect-square">
               <div className="circle-cards absolute inset-0 flex items-center justify-center">
+                {/* ── Zoomed selected card display (centered in circle) ── */}
+                {selectedCardId && (gameState.status === 'STORYTELLING' || gameState.status === 'BLUFFING') && (
+                  <div className="z-20">
+                    {(() => {
+                      const selectedCard = handCards.find((card) => card.id === selectedCardId)
+                      return selectedCard ? (
+                        <div className="relative w-32 h-44 sm:w-40 sm:h-56 rounded-xl overflow-hidden border-2 border-gold/50 shadow-[0_0_24px_rgba(201,168,76,0.5)]">
+                          <img src={selectedCard.imageUrl} alt="Selected card" className="w-full h-full object-cover" />
+                        </div>
+                      ) : null
+                    })()}
+                  </div>
+                )}
 
                 <>
                   {boardCards.length === 0 && gameState.status !== 'BLUFFING' && gameState.status !== 'STORYTELLING' ? (
@@ -1226,7 +1173,7 @@ export default function RoomPage() {
                                     type="button"
                                     disabled={!isVotable}
                                     onClick={() => isVotable && setSelectedCardId(card.id)}
-                                    className={`game-card flex-shrink-0 relative transition-all duration-200 ${cardSizeClass} ${card.isStorytellerCard && gameState.status === 'SCORING' ? 'ring-4 ring-gold ring-offset-2 ring-offset-purple-deep' : ''}`}
+                                    className={`game-card flex-shrink-0 relative transition-all duration-200 ${cardSizeClass} ${selectedCardId === card.id ? 'border-12 border-gold shadow-[0_0_70px_rgba(212,175,55,1)] scale-125 z-10 animate-pulse' : ''} ${card.isStorytellerCard && gameState.status === 'SCORING' ? 'ring-4 ring-gold ring-offset-2 ring-offset-purple-deep' : ''}`}
                                   >
                                     <img 
                                       src={card.imageUrl} 
@@ -1318,140 +1265,129 @@ export default function RoomPage() {
         </div>
       )}
 
-      {/* Mobile bottom stack */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 flex flex-col hand-tray safe-bottom">
-        {/* Player Hand — fanned deal animation */}
+      {/* Mobile bottom stack (vertical hierarchy: Hand, Submit Button) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 flex flex-col bg-purple-deep/95 backdrop-blur-sm border-t border-gold/20">
+        {/* Player Hand (scaled cards on narrow screens) */}
         {(gameState.status === 'STORYTELLING' ||
           (gameState.status === 'BLUFFING' && !isStoryteller && !hasSubmittedBluff)) && (
-          <div className="flex flex-row justify-center items-end overflow-visible gap-2 px-4 pt-3 pb-1">
+          <div className="flex flex-row justify-center items-center overflow-x-auto gap-3 px-4 py-3">
             {handCards.map((card) => {
               const isDisabled =
                 (gameState.status === 'BLUFFING' && (isStoryteller || card.isSubmittedForRound || hasSubmittedBluff)) ||
                 (gameState.status === 'VOTING')
-              const isSelected = selectedCardId === card.id
 
               return (
                 <button
                   key={card.id}
                   type="button"
                   disabled={isDisabled}
-                  onClick={() => setSelectedCardId(isSelected ? null : card.id)}
-                  className={`game-card flex-shrink-0 min-w-[56px] w-14 h-20 sm:w-16 sm:h-24 ${isSelected ? 'selected' : ''}`}
-                  style={{ zIndex: isSelected ? 20 : undefined }}
+                  onClick={() => setSelectedCardId(selectedCardId === card.id ? null : card.id)}
+                  className={`game-card flex-shrink-0 w-14 h-20 sm:w-16 sm:h-24 ${selectedCardId === card.id ? 'border-2 border-gold shadow-[0_0_20px_rgba(212,175,55,0.6)]' : ''} hover:scale-105 transition-all duration-200`}
                 >
-                  <img src={card.imageUrl} alt="Hand card" className="aspect-[3/4] w-full h-full object-cover rounded-[0.65rem]" />
+                  <img src={card.imageUrl} alt="Hand card" className="aspect-[3/4] w-full h-full object-cover rounded-lg" />
                 </button>
               )
             })}
-            {handCards.length === 0 && <p className="py-2 text-xs italic text-muted-foreground">No cards in hand</p>}
+            {handCards.length === 0 && <p className="py-2 text-xs text-muted-foreground">No cards</p>}
           </div>
         )}
 
-        {/* Submit Button */}
+        {/* Submit Button (always visible at bottom with z-index-[60]) */}
         {submitLabel && gameState.status !== 'SCORING' && !(gameState.status === 'VOTING' && allVotesIn) && (
-          <div className="px-4 pt-2 pb-3 z-[60]">
-            <motion.button
-              className="btn-gold w-full py-3"
+          <div className="px-4 py-3 mb-4 z-[60]">
+            <button
+              className={`btn-gold shadow-[0_0_15px_rgba(212,175,55,0.4)] w-[90%] mx-auto py-3 ${selectedCardId ? 'brightness-110 shadow-[0_0_25px_rgba(212,175,55,0.6)]' : ''}`}
               onClick={handleMainAction}
               disabled={!canSubmit || isSubmitting}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
             >
-              {isSubmitting ? 'Submitting…' : submitLabel}
-            </motion.button>
+              {isSubmitting ? 'Submitting...' : submitLabel}
+            </button>
           </div>
         )}
       </div>
 
-      {/* ── Voting submit button (desktop) ── */}
+      {/* ── Voting submit button (separate from hand tray) ── */}
       {gameState.status === 'VOTING' && !isStoryteller && !currentPlayerVote && !isSubmitting && submitLabel && (
         <div className="hidden lg:flex fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-          <motion.button
-            className="btn-gold px-8 py-2"
+          <button
+            className={`btn-gold shadow-[0_0_15px_rgba(212,175,55,0.4)] px-8 py-2 ${selectedCardId ? 'brightness-110 shadow-[0_0_25px_rgba(212,175,55,0.6)]' : ''}`}
             onClick={handleMainAction}
             disabled={!canSubmit || isSubmitting}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
           >
-            {isSubmitting ? 'Submitting…' : submitLabel}
-          </motion.button>
+            {isSubmitting ? 'Submitting...' : submitLabel}
+          </button>
         </div>
       )}
 
-      {/* ── Desktop hand tray ── */}
+      {/* ── Bottom hand tray (dedicated footer container - widescreen) ── */}
       {(gameState.status === 'STORYTELLING' ||
         (gameState.status === 'BLUFFING' && !isStoryteller && !hasSubmittedBluff)) && (
-        <div className="hidden lg:flex fixed bottom-0 left-0 right-0 z-50 flex-col items-center gap-3 p-4 hand-tray-horizontal safe-bottom">
-          {/* Cards row with fan deal */}
-          <div className="flex w-full flex-row justify-center items-end overflow-visible gap-2 px-2 h-36">
+        <div className="hidden lg:flex fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center pb-6 gap-4 p-4 bg-purple-deep/90 backdrop-blur-sm">
+          {/* Cards row */}
+          <div className="flex flex-row justify-center items-center overflow-visible gap-4 px-2 h-40">
             {handCards.map((card) => {
               const isDisabled =
                 (gameState.status === 'BLUFFING' && (isStoryteller || card.isSubmittedForRound || hasSubmittedBluff)) ||
                 (gameState.status === 'VOTING')
-              const isSelected = selectedCardId === card.id
 
               return (
                 <button
                   key={card.id}
                   type="button"
                   disabled={isDisabled}
-                  onClick={() => setSelectedCardId(isSelected ? null : card.id)}
-                  className={`game-card flex-shrink-0 w-20 h-28 lg:w-24 lg:h-32 ${isSelected ? 'selected' : ''}`}
-                  style={{ zIndex: isSelected ? 20 : undefined }}
+                  onClick={() => setSelectedCardId(selectedCardId === card.id ? null : card.id)}
+                  className={`game-card flex-shrink-0 w-20 h-28 lg:w-24 lg:h-32 ${selectedCardId === card.id ? 'border-2 border-gold shadow-[0_0_20px_rgba(212,175,55,0.6)]' : ''} hover:scale-105 hover:-translate-y-4 transition-all duration-200`}
                 >
-                  <img src={card.imageUrl} alt="Hand card" className="aspect-[3/4] w-full h-full object-cover rounded-[0.65rem]" />
+                  <img src={card.imageUrl} alt="Hand card" className="aspect-[3/4] w-full h-full object-cover rounded-lg" />
                 </button>
               )
             })}
-            {handCards.length === 0 && <p className="py-4 text-sm italic text-muted-foreground">No cards in hand</p>}
+            {handCards.length === 0 && <p className="py-4 text-sm text-muted-foreground">No cards in hand</p>}
           </div>
-
+          
+          {/* Submit button row - centered at very bottom */}
           {submitLabel && (
-            <motion.button
-              className="btn-gold px-8 py-2 z-[60]"
-              onClick={handleMainAction}
-              disabled={!canSubmit || isSubmitting}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              {isSubmitting ? 'Submitting…' : submitLabel}
-            </motion.button>
+            <div className="flex justify-center">
+              <button
+                className={`btn-gold shadow-[0_0_15px_rgba(212,175,55,0.4)] px-8 py-2 z-[60] ${selectedCardId ? 'brightness-110 shadow-[0_0_25px_rgba(212,175,55,0.6)]' : ''}`}
+                onClick={handleMainAction}
+                disabled={!canSubmit || isSubmitting}
+              >
+                {isSubmitting ? 'Submitting...' : submitLabel}
+              </button>
+            </div>
           )}
         </div>
       )}
 
-      {/* ── Next round button ── */}
+      {/* ── Next round button (bottom-6 right-6 during scoring) - only host can click */}
       {gameState.status === 'SCORING' && gameState.currentRound < gameState.maxRounds && gameState.players[0]?.id === playerId && (
-        <div className="fixed bottom-4 right-4 z-50 safe-bottom">
-          <motion.button
-            className="btn-gold"
+        <div className="fixed bottom-4 right-4 z-50">
+          <button
+            className="btn-gold shadow-[0_0_15px_rgba(212,175,55,0.4)]"
             onClick={nextRound}
             disabled={isSubmitting}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
           >
-            {isSubmitting ? 'Conjuring…' : 'Next Round ✦'}
-          </motion.button>
+            {isSubmitting ? 'Starting...' : 'Next Round'}
+          </button>
         </div>
       )}
 
-      {/* ── Scoring overlay ── */}
+      {/* ── Scoring overlay (shown instead of hand) ── */}
       {gameState.status === 'SCORING' && (
-        <div
-          className="hand-tray px-4 py-4 sm:px-6 pb-20 lg:pb-4 mt-20 lg:mt-0"
-        >
-          <p className="mb-2 font-serif text-xs italic text-[#c5a059]/80">{lastSarcasticMessage || getCynicalRoundMessage(gameState, gameState.votes, gameState.cards)}</p>
+        <div className="hand-tray px-4 py-4 sm:px-6 pb-20 lg:pb-4 mt-20 lg:mt-0">
+          <p className="mb-2 text-xs font-semibold text-gold">{lastSarcasticMessage || getCynicalRoundMessage(gameState, gameState.votes, gameState.cards)}</p>
           <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pb-1">
             {[...gameState.players].sort((a, b) => b.score - a.score).map((player, idx) => {
               const scoreDelta = scoreDeltas.find((d) => d.playerId === player.id)?.points ?? 0
               const isHost = player.id === gameState.players[0]?.id
               return (
-                <div key={player.id} className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors ${isHost ? 'border-[rgba(197,160,89,0.4)] bg-[rgba(197,160,89,0.08)]' : 'border-[rgba(197,160,89,0.12)]'}`}>
-                  <span className="font-['Cinzel'] text-sm font-bold text-[#c5a059]">{idx + 1}</span>
+                <div key={player.id} className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${isHost ? 'border-gold bg-gold/10' : 'border-border'}`}>
+                  <span className="text-sm font-bold text-gold">{idx + 1}</span>
                   <div className="player-avatar text-xs">{player.displayName.charAt(0).toUpperCase()}</div>
-                  <div className="flex-1">
-                    <p className="font-serif text-xs font-medium text-foreground/90">{player.displayName}{isHost && <span className="text-[#c5a059] ml-1">✦</span>}</p>
-                    <p className="font-['Cinzel'] text-xs text-muted-foreground">{player.score} pts{scoreDelta > 0 && <span className="score-delta inline-block text-[#d4af5a] ml-1">+{scoreDelta}</span>}</p>
+                  <div>
+                    <p className="text-xs font-medium">{player.displayName}{isHost && <span className="text-gold ml-1">👑</span>}</p>
+                    <p className="text-xs text-muted-foreground">{player.score} pts{scoreDelta > 0 && <span className="text-gold ml-1">+{scoreDelta}</span>}</p>
                   </div>
                 </div>
               )
@@ -1459,7 +1395,6 @@ export default function RoomPage() {
           </div>
         </div>
       )}
-      </div>
     </main>
   )
 }

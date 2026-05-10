@@ -915,9 +915,11 @@ export default function RoomPage() {
     }
   }
 
-  const handCards = gameState.status === 'BLUFFING' && !isStoryteller
-    ? playerHand.filter((c) => !c.isStorytellerCard)
-    : playerHand
+  const handCards = useMemo(() =>
+    gameState.status === 'BLUFFING' && !isStoryteller
+      ? playerHand.filter((c) => !c.isStorytellerCard)
+      : playerHand
+  , [gameState.status, isStoryteller, playerHand])
 
   const statusText =
     gameState.status === 'STORYTELLING' ? (isStoryteller ? 'Pick a card and give a clue' : `Waiting for ${storytellerName}...`) :
@@ -1224,7 +1226,7 @@ export default function RoomPage() {
                                     type="button"
                                     disabled={!isVotable}
                                     onClick={() => isVotable && setSelectedCardId(card.id)}
-                                    className={`game-card flex-shrink-0 relative transition-all duration-200 ${cardSizeClass} ${selectedCardId === card.id ? 'border-12 border-gold shadow-[0_0_70px_rgba(212,175,55,1)] scale-125 z-10 animate-pulse' : ''} ${card.isStorytellerCard && gameState.status === 'SCORING' ? 'ring-4 ring-gold ring-offset-2 ring-offset-purple-deep' : ''}`}
+                                    className={`game-card flex-shrink-0 relative transition-all duration-200 ${cardSizeClass} ${card.isStorytellerCard && gameState.status === 'SCORING' ? 'ring-4 ring-gold ring-offset-2 ring-offset-purple-deep' : ''}`}
                                   >
                                     <img 
                                       src={card.imageUrl} 

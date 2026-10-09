@@ -10,7 +10,7 @@ interface TogetherImageResponse {
 
 export class TogetherImageService {
   private readonly endpoint = 'https://api.together.xyz/v1/images/generations'
-  private readonly model = 'black-forest-labs/FLUX.1-schnell'
+  private readonly model = 'Rundiffusion/Juggernaut-Lightning-Flux'
 
   constructor(
     private readonly supabase?: SupabaseClient,

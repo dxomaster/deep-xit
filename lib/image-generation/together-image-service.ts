@@ -326,7 +326,7 @@ Keep all content strictly G-rated and family-safe.`
 
     // Generate images in parallel with concurrency limit and delays to avoid rate limiting
     const images: GeneratedImage[] = []
-    const concurrencyLimit = 2 // Keep low to avoid Together AI 429 rate limits (50 RPM)
+    const concurrencyLimit = 1 // Sequential to avoid Together AI 429 rate limits
     
     for (let i = 0; i < prompts.length; i += concurrencyLimit) {
       const batch = prompts.slice(i, i + concurrencyLimit)
@@ -352,14 +352,16 @@ Keep all content strictly G-rated and family-safe.`
     return `A completely safe, family-friendly, G-rated, whimsical, hand-drawn illustration of ${normalizedTheme}, dreamlike fantasy style. ABSOLUTELY NO: nudity, sexual content, violence, gore, horror, disturbing imagery, weapons, drugs, alcohol, tobacco, or any adult themes. NO text, NO letters, NO words, NO symbols, NO writing of any kind. Must be suitable for children of all ages. Must be appropriate for general audiences. Must be completely wholesome and innocent. Vibrant colors, safe for all ages, cartoon style, magical atmosphere. Create a unique, varied composition with different perspectives, colors, and elements each time. Avoid repeating similar compositions or styles. Keep all content strictly G-rated and family-safe.`
   }
 
-  private async generateSingleImageWithRetry(prompt: string, retries = 3): Promise<GeneratedImage> {
+  private async generateSingleImageWithRetry(prompt: string, retries = 6): Promise<GeneratedImage> {
     for (let attempt = 0; attempt < retries; attempt++) {
       try {
         return await this.generateSingleImage(prompt)
       } catch (error) {
         const isRateLimit = error instanceof Error && error.message.includes('429')
         if (isRateLimit && attempt < retries - 1) {
-          const delay = Math.pow(2, attempt + 1) * 1000 // 2s, 4s, 8s
+          const retryAfterMs = (error as Error & { retryAfterMs?: number }).retryAfterMs
+          const backoffMs = Math.min(Math.pow(2, attempt + 1) * 1000, 30000) // 2s, 4s, 8s, 16s, 30s
+          const delay = (retryAfterMs ?? backoffMs) + Math.floor(Math.random() * 1000)
           console.warn(`Rate limited, retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`)
           await new Promise(resolve => setTimeout(resolve, delay))
           continue
@@ -406,6 +408,12 @@ Keep all content strictly G-rated and family-safe.`
       if (!response.ok) {
         const errorBody = await response.text()
         console.error('Together AI error:', response.status, errorBody)
+        if (response.status === 429) {
+          const retryAfterSeconds = Number(response.headers.get('retry-after'))
+          const rateLimitError = new Error(`Together AI rate limited (429): ${errorBody}`) as Error & { retryAfterMs?: number }
+          if (retryAfterSeconds > 0) rateLimitError.retryAfterMs = retryAfterSeconds * 1000
+          throw rateLimitError
+        }
         if (response.status === 500) {
           throw new Error(`Together AI server error (500). Please retry in a few moments or use fallback images.`)
         }
